@@ -1,0 +1,48 @@
+<ul class="breadcrumb">
+    <li><a href="/">Home</a> <span class="divider">/</span></li>
+    <li><a href="<%- pathTo.loans %>">loans</a> <span class="divider">/</span></li>
+    <li class="active"><a href="#">Details of loan</a></li>
+</ul>
+
+<div class="page-header">
+    <h1>Details of loan</h1>
+</div>
+
+<table class="table table-bordered">
+    <tbody>
+        <tr><th>nr</th><td><%= loan.nr %></td></tr>
+
+        <tr><th>value</th><td><%= loan.value %></td></tr>
+
+        <tr><th>cancelation_period</th><td><%= loan.cancelation_period %></td></tr>
+
+        <tr><th>minimum_term</th><td><%= loan.minimum_term %></td></tr>
+
+        <tr><th>start_date</th><td><%= loan.start_date %></td></tr>
+
+        <tr><th>rate_of_interest</th><td><%= loan.rate_of_interest %></td></tr>
+
+        <tr><th>loaner_name</th><td><%= loan.loaner_name %></td></tr>
+
+        <tr><th>loaner_address</th><td><%= loan.loaner_address %></td></tr>
+
+        <tr><th>contract_state</th><td><%= loan.contract_state %></td></tr>
+
+        <tr><th>loan_state</th><td><%= loan.loan_state %></td></tr>
+
+        <tr><th>date_contract_sent_to_loaner</th><td><%= loan.date_contract_sent_to_loaner %></td></tr>
+
+        <tr><th>date_contract_signature_received</th><td><%= loan.date_contract_signature_received %></td></tr>
+
+        <tr><th>date_loan_loaned</th><td><%= loan.date_loan_loaned %></td></tr>
+
+        <tr><th>date_loan_repaid</th><td><%= loan.date_loan_repaid %></td></tr>
+    </tbody>
+</table>
+
+<div class="well">
+    <%- link_to('<i class="icon-edit icon-white"></i> Edit', pathTo.edit_loan(loan), {class: 'btn btn-primary'}) %>
+    <%- link_to('<i class="icon-remove icon-white"></i> Delete', pathTo.loan(loan), {class: 'btn btn-danger', method: 'delete', remote: true, jsonp: '(function (u) { location.href = u; })'}) %>
+    or
+    <%- link_to('Back to index', pathTo.loans) %>
+</div>

@@ -1,0 +1,18 @@
+<ul class="breadcrumb">
+    <li><a href="/">Home</a> <span class="divider">/</span></li>
+    <li><a href="<%- pathTo.loans() %>">loans</a> <span class="divider">/</span></li>
+    <li class="active"><a href="#">New loan</a></li>
+</ul>
+
+<div class="page-header">
+    <h1>New loan</h1>
+</div>
+
+<% var form = formFor(loan, {action: pathTo.loans(), method: 'POST', id: "loan-form", class: 'form-horizontal'}) %>
+<%- form.begin() %>
+<%- include _form %>
+<div class="form-actions">
+    <%- form.submit('<i class="icon-ok icon-white"></i> Create loan', {class: 'btn btn-primary'}) %> or
+    <%- linkTo('Cancel', pathTo.loans(), {class: 'btn'}) %>
+</div>
+<%- form.end() %>
