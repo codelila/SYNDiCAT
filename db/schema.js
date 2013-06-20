@@ -22,20 +22,19 @@
 */
 
 var Loan = describe('Loan', function () {
-    property('nr', Number);
     property('value', Number);
     property('cancelation_period', String);
     property('minimum_term', String);
-    property('start_date', Date, {default: function () { return new Date(); }});
+    property('start_date', String, {default: function () { return '2013-01-01'; }});
     property('rate_of_interest', Number);
     property('loaner_name', String);
-    property('loaner_address', String);
+    property('loaner_address', Text);
     property('contract_state', String);
     property('loan_state', String);
-    property('date_contract_sent_to_loaner', Date, {default: null, allowNull: true});
-    property('date_contract_signature_received', Date, {default: null});
-    property('date_loan_loaned', Date, {default: null});
-    property('date_loan_repaid', Date, {default: null});
+    property('date_contract_sent_to_loaner', Date);
+    property('date_contract_signature_received', Date);
+    property('date_loan_loaned', Date);
+    property('date_loan_repaid', Date);
     set('restPath', pathTo.loans);
 });
 

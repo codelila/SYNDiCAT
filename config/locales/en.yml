@@ -1,0 +1,12 @@
+en:
+  loans:
+    index: 'Index'
+    new: 'New loan'
+    actions: 'Actions'
+    back_to_index: 'Back to index'
+
+    create: 'Create loan'
+
+    # Fields
+    id: 'ID'
+    value: 'Value'

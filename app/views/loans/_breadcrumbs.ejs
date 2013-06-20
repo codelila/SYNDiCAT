@@ -1,0 +1,6 @@
+<ul class="breadcrumb">
+    <li <% if (typeof loans !== 'undefined') { %> class="active"<%}%>><a href="<%- pathTo.loans() %>"><%= t('loans.index_breadcrumb')%></a> <span class="divider">/</span></li>
+    <% if (typeof loan !== 'undefined') { %>
+      <li class="active"><a href="<%- pathTo.loan(loan.id) %>"><% if (typeof loan.id !== 'undefined') {%><%- t(['loans.details_breadcrumb', loan.id]) %><% } else { %><%- t('loans.new_breadcrumb') %><%}%></a></li>
+    <% } %>
+</ul>

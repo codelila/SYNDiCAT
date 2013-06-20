@@ -1,0 +1,55 @@
+de:
+  cancel: 'Abbrechen'
+  loans:
+    # UI elements
+    index: 'Übersicht'
+    index_breadcrumb: 'Direktkredite'
+    details: 'Details für Direktkredit #%'
+    details_breadcrumb: '#%'
+    new: 'Neuer Direktkredit'
+    new_breadcrumb: 'neu'
+
+    contract_state_edit: 'Vertragsstatus für Direktkredit %'
+    loan_state_edit: 'Kreditstatus für Direktkredit % aktualisieren'
+
+    edit_contract_state: 'Vertragsstatus bearbeiten'
+    edit_loan_state: 'Kreditstatus bearbeiten'
+
+    actions: 'Aktionen'
+    signature_received: 'Unterschrift eingegangen'
+    loan_received: 'Kredit eingegangen'
+    back_to_index: 'Zurück zur Übersicht'
+    create: 'Eintragen'
+
+    # Felder
+    id: 'Nummer'
+    value: 'Betrag'
+
+    # Fragments
+    in_currency: '% %'
+
+    # Messages
+    no_loans: 'Bisher keine Direktkredite eingetragen'
+    cannot_create: 'Direktkredit kann nicht eingetragen werden'
+    created: 'Direktkredit eingetragen'
+
+  models:
+    Loan:
+      fields:
+        id: 'Nummer'
+        value: 'Betrag'
+        cancelation_period: 'Kündigungsfrist'
+        minimum_term: 'Mindestlaufzeit'
+        start_date: 'Kreditbeginn'
+        rate_of_interest: 'Zinssatz'
+        loaner_name: 'Name des_der Kreditgeber_in'
+        loaner_address: 'Anschrift des_der Kreditgeber_in'
+      descriptions:
+        value: 'Der Kreditbetrag in Euro, ohne das Eurozeichen'
+        timespans: 'zum Beispiel »3 Monate«, »1 Jahr«'
+
+  validate:
+    presence_of: 'muss angegeben werden'
+    positive_number: 'muss eine positive Zahl sein'
+    number: 'muss eine Zahl sein'
+    date: 'muss ein Datum im Format YYYY-MM-DD sein'

@@ -1,26 +1,26 @@
-<%- errorMessagesFor(loan) %>
-<div class="control-group">
-   <%- form.label("nr", false, {class: "control-label"}) %>
-   <div class="controls">
-       <%- form.input("nr") %>
-   </div>
-</div>
+<%- errorsFor(loan, 'Loan') %>
 <div class="control-group">
    <%- form.label("value", false, {class: "control-label"}) %>
    <div class="controls">
+      <div class="input-append">
        <%- form.input("value") %>
+        <span class="add-on">€</span>
+      </div>
+       <%- inputDesc("value") %>
    </div>
 </div>
 <div class="control-group">
    <%- form.label("cancelation_period", false, {class: "control-label"}) %>
    <div class="controls">
        <%- form.input("cancelation_period") %>
+       <small><%- t('models.Loan.descriptions.timespans') %></small>
    </div>
 </div>
 <div class="control-group">
    <%- form.label("minimum_term", false, {class: "control-label"}) %>
    <div class="controls">
        <%- form.input("minimum_term") %>
+       <small><%- t('models.Loan.descriptions.timespans') %></small>
    </div>
 </div>
 <div class="control-group">
@@ -32,7 +32,10 @@
 <div class="control-group">
    <%- form.label("rate_of_interest", false, {class: "control-label"}) %>
    <div class="controls">
+      <div class="input-append">
        <%- form.input("rate_of_interest") %>
+        <span class="add-on">%</span>
+      </div>
    </div>
 </div>
 <div class="control-group">
@@ -44,42 +47,6 @@
 <div class="control-group">
    <%- form.label("loaner_address", false, {class: "control-label"}) %>
    <div class="controls">
-       <%- form.input("loaner_address") %>
-   </div>
-</div>
-<div class="control-group">
-   <%- form.label("contract_state", false, {class: "control-label"}) %>
-   <div class="controls">
-       <%- form.input("contract_state") %>
-   </div>
-</div>
-<div class="control-group">
-   <%- form.label("loan_state", false, {class: "control-label"}) %>
-   <div class="controls">
-       <%- form.input("loan_state") %>
-   </div>
-</div>
-<div class="control-group">
-   <%- form.label("date_contract_sent_to_loaner", false, {class: "control-label"}) %>
-   <div class="controls">
-       <%- form.input("date_contract_sent_to_loaner") %>
-   </div>
-</div>
-<div class="control-group">
-   <%- form.label("date_contract_signature_received", false, {class: "control-label"}) %>
-   <div class="controls">
-       <%- form.input("date_contract_signature_received") %>
-   </div>
-</div>
-<div class="control-group">
-   <%- form.label("date_loan_loaned", false, {class: "control-label"}) %>
-   <div class="controls">
-       <%- form.input("date_loan_loaned") %>
-   </div>
-</div>
-<div class="control-group">
-   <%- form.label("date_loan_repaid", false, {class: "control-label"}) %>
-   <div class="controls">
-       <%- form.input("date_loan_repaid") %>
+       <%- form.textarea("loaner_address", {rows: 3}) %>
    </div>
 </div>

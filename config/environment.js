@@ -13,6 +13,7 @@ module.exports = function (compound) {
         app.use(express.session({secret: 'secret'}));
         app.use(express.methodOverride());
         app.use(app.router);
+        app.set('i18n', 'on');
+        app.set('defaultLocale', 'de');
     });
-
 };

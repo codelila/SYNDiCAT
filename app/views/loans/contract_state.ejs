@@ -1,0 +1,69 @@
+<%- include _breadcrumbs %>
+<div class="page-header">
+    <h1><%= t(['loans.contract_state_edit', loan.id]) %></h1>
+</div>
+
+<p>
+<% switch (loan.contract_state) {
+case null: %>
+  Bitte fülle die Vorlage für Direktkredite mit den folgenden Angaben.
+  Den ausgefüllten Vertrag musst du dann an den_die Direktkreditgeber_in schicken.
+<% break; case 'sent_to_loaner': %>
+  Der Vertrag wurde an den_die Kreditgeber_in verschickt. Ist der unterschriebene Vertrag bei dir angekommen?
+  Wenn ja: Bitte vergleiche die folgenden Angaben gründlich mit dem unterschriebenen Vertrag.
+  Stimmen alle Angaben überein? Ist der Vertrag unterschrieben?
+<% break; case 'signature_received': %>
+  Der Vertrag ist bereits unterschrieben.
+<% } %>
+</p>
+
+<% var table = startTable('Loan', loan) %>
+<table class="table table-bordered">
+    <tbody>
+      <%- table.row('id') %>
+      <%- table.row('value') %>
+      <%- table.row('cancelation_period') %>
+      <%- table.row('minimum_term') %>
+      <%- table.row('start_date') %>
+      <%- table.row('rate_of_interest') %>
+      <%- table.row('loaner_name') %>
+      <%- table.row('loaner_address') %>
+    </tbody>
+</table>
+
+<% var form = formFor(loan, {action: pathTo.contract_state_loan(loan), method: 'PUT', id: "loan-form", class: 'form-horizontal'}) %>
+<%- form.begin() %>
+
+<% var is_next_step = loan.contract_state === null %>
+<div class="control-group">
+  <div class="controls">
+    <label class="checkbox">
+      <input type="checkbox" name="Loan[contract_state]" value="sent_to_loaner" <%if (!is_next_step) { %>disabled<% } %>
+        <%if (loan.contract_state !== null) {%>checked<%}%>>
+      <%if (is_next_step) { %> Ich habe den Vertrag abgeschickt <% } else { %> Der Vertrag wurde abgeschickt <% } %>
+    </label>
+  </div>
+</div>
+
+<% is_next_step = loan.contract_state === 'sent_to_loaner' %>
+<div class="control-group">
+  <div class="controls">
+    <label class="checkbox">
+      <input type="checkbox" name="Loan[contract_state]" value="signature_received" <%if (!is_next_step) { %>disabled<% } %>
+        <%if (loan.contract_state === 'signature_received') {%>checked<%}%>>
+      <%if (is_next_step) { %> Ich habe den unterschriebenen Vertrag erhalten <% } else { %> Der unterschriebene Vertrag ist angekommen <% } %>
+    </label>
+  </div>
+</div>
+
+<div class="form-actions">
+    <% switch (loan.contract_state) {
+    case null: case 'sent_to_loaner': %>
+      <%- form.submit('<i class="icon-ok icon-white"></i> Update loan', {class: 'btn btn-primary'}) %> or
+
+    <% break; case 'signature_received': %>
+      Nichts mehr zu tun.
+    <% } %>
+    <%- linkTo('Cancel', pathTo.loan(loan), {class: 'btn'}) %>
+</div>
+<%- form.end() %>
