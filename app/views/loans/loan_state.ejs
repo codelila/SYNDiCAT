@@ -1,0 +1,59 @@
+<%- include _breadcrumbs %>
+<div class="page-header">
+    <h1><%= t(['loans.loan_state_edit', loan.id]) %></h1>
+</div>
+
+<p>
+<% switch (loan.loan_state) {
+case null: %>
+  <%if (user.can('receive loans')) {%>
+  Hast du eine Einzahlung für diesen Direktkredit erhalten? Bitte vergleiche Kreditnummer, Kreditgeber_in und Betrag.
+  <%} else {%>
+  Der Kredit ist noch nicht eingegangen.
+  <%}%>
+<% break; case 'loaned': %>
+  Der Kredit ist bereits eingegangen.
+<% } %>
+</p>
+
+<% var table = startTable('Loan', loan) %>
+<table class="table table-bordered">
+    <tbody>
+      <%- table.row('id') %>
+      <%- table.row('value') %>
+      <%- table.row('loaner_name') %>
+      <%- table.row('loaner_address') %>
+      <%- table.row('notes') %>
+    </tbody>
+</table>
+
+<% var form = formFor(loan, {action: pathTo.loan_state_loan(loan), method: 'PUT', id: "loan-form", class: 'form-horizontal'}) %>
+<%- form.begin() %>
+
+<% var is_next_step = loan.loan_state === null && user.can('receive loans')%>
+<div class="control-group">
+  <div class="controls">
+    <label class="checkbox">
+      <input type="checkbox" name="Loan[loan_state]" value="loaned" <%if (!is_next_step) { %>disabled<% } %>
+        <%if (loan.loan_state !== null) {%>checked<%}%>>
+      <%if (is_next_step) { %> Ich habe den Kredit erhalten <% } else { %> Der Kredit ist auf dem Konto eingegangen <% } %>
+    </label>
+  </div>
+</div>
+
+
+<div class="form-actions">
+    <% switch (loan.loan_state) {
+    case null: %>
+      <%if (user.can('receive loans')) {%>
+      <%- form.submit('<i class="icon-ok icon-white"></i> Update loan', {class: 'btn btn-primary'}) %> or
+      <% } else { %>
+        Du kannst hier nichts mehr tun.
+      <%}%>
+
+    <% break; case 'loaned': %>
+      Nichts mehr zu tun.
+    <% } %>
+    <%- linkTo('Cancel', pathTo.loan(loan), {class: 'btn'}) %>
+</div>
+<%- form.end() %>

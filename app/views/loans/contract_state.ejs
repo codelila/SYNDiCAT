@@ -9,9 +9,12 @@ case null: %>
   Bitte fülle die Vorlage für Direktkredite mit den folgenden Angaben.
   Den ausgefüllten Vertrag musst du dann an den_die Direktkreditgeber_in schicken.
 <% break; case 'sent_to_loaner': %>
-  Der Vertrag wurde an den_die Kreditgeber_in verschickt. Ist der unterschriebene Vertrag bei dir angekommen?
-  Wenn ja: Bitte vergleiche die folgenden Angaben gründlich mit dem unterschriebenen Vertrag.
+  Der Vertrag wurde an den_die Kreditgeber_in verschickt.
+  <%if (user.can('receive_signed_contracts')) {%>
+  Ist der unterschriebene Vertrag bei dir angekommen? Wenn ja: Bitte vergleiche
+  die folgenden Angaben gründlich mit dem unterschriebenen Vertrag.
   Stimmen alle Angaben überein? Ist der Vertrag unterschrieben?
+  <%}%>
 <% break; case 'signature_received': %>
   Der Vertrag ist bereits unterschrieben.
 <% } %>
@@ -22,12 +25,16 @@ case null: %>
     <tbody>
       <%- table.row('id') %>
       <%- table.row('value') %>
-      <%- table.row('cancelation_period') %>
-      <%- table.row('minimum_term') %>
-      <%- table.row('start_date') %>
       <%- table.row('rate_of_interest') %>
+      <%- table.row('interest_yearly_to') %>
+      <%- table.row('minimum_term') %>
+      <%- table.row('cancelation_period') %>
+      <%- table.row('granted_until') %>
       <%- table.row('loaner_name') %>
       <%- table.row('loaner_address') %>
+      <%- table.row('loaner_email') %>
+      <%- table.row('loaner_phone') %>
+      <%- table.row('notes') %>
     </tbody>
 </table>
 
@@ -45,7 +52,7 @@ case null: %>
   </div>
 </div>
 
-<% is_next_step = loan.contract_state === 'sent_to_loaner' %>
+<% is_next_step = loan.contract_state === 'sent_to_loaner' && user.can('receive signed contracts')%>
 <div class="control-group">
   <div class="controls">
     <label class="checkbox">
@@ -57,11 +64,10 @@ case null: %>
 </div>
 
 <div class="form-actions">
-    <% switch (loan.contract_state) {
-    case null: case 'sent_to_loaner': %>
+    <%if (loan.contract_state === null || (loan.contract_state === 'sent_to_loaner'
+      && user.can('receive signed contracts'))) {%>
       <%- form.submit('<i class="icon-ok icon-white"></i> Update loan', {class: 'btn btn-primary'}) %> or
-
-    <% break; case 'signature_received': %>
+    <%} else {%>
       Nichts mehr zu tun.
     <% } %>
     <%- linkTo('Cancel', pathTo.loan(loan), {class: 'btn'}) %>

@@ -13,6 +13,7 @@
   , "seedjs": "latest"
   , "co-assets-compiler": "*"
   , "jugglingdb-sqlite3": ""
+  , "connect-roles": ""
   },
   "devDependencies":
   { "nodeunit": "*"

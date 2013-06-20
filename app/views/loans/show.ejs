@@ -9,13 +9,17 @@
     <tbody>
       <%- table.row('id') %>
       <%- table.row('value') %>
-      <%- table.row('cancelation_period') %>
-      <%- table.row('minimum_term') %>
-      <%- table.row('start_date') %>
       <%- table.row('rate_of_interest') %>
+      <%- table.row('interest_yearly_to') %>
+      <%- table.row('minimum_term') %>
+      <%- table.row('cancelation_period') %>
+      <%- table.row('granted_until') %>
       <%- table.row('loaner_name') %>
       <%- table.row('loaner_address') %>
-
+      <%- table.row('loaner_email') %>
+      <%- table.row('loaner_phone') %>
+      <%- table.row('notes') %>
+<!--
         <tr><th>contract_state</th><td><%= loan.contract_state %></td></tr>
 
         <tr><th>loan_state</th><td><%= loan.loan_state %></td></tr>
@@ -27,6 +31,7 @@
         <tr><th>date_loan_loaned</th><td><%= loan.date_loan_loaned %></td></tr>
 
         <tr><th>date_loan_repaid</th><td><%= loan.date_loan_repaid %></td></tr>
+-->
     </tbody>
 </table>
 
