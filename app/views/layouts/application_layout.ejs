@@ -13,6 +13,9 @@
             <div class="navbar-inner">
                 <div class="container">
                     <a class="brand" href="/">Direktkredite</a>
+                <div class="pull-right navbar-text">
+                   <%= t(['logged_in_as', user.id]) %>
+                </div>
                 </div>
             </div>
         </div>
@@ -32,11 +35,16 @@
                 </div>
             <% }; %>
 
+            <%- include _breadcrumbs %>
+            <div class="page-header">
+                <h1><%= title %></h1>
+            </div>
+
             <%- body %>
 
             <hr />
             <footer>
-                <p>&copy; Company <% var d=new Date();%><%= d.getFullYear() %></p>
+                <p>&copy; Adrian Lang 2013</p>
             </footer>
         </div>
     </body>

@@ -70,7 +70,7 @@ action(function show() {
 });
 
 action(function contract_state() {
-    this.title = t('loans.contract_state_edit');
+    this.title = t(['loans.contract_state_edit', this.loan.id]);
     switch(params.format) {
         case "json":
             send(this.loan);
@@ -82,7 +82,7 @@ action(function contract_state() {
 
 action(function put_contract_state() {
     var loan = this.loan;
-    this.title = t('loans.contract_state_edit');
+    this.title = t(['loans.contract_state_edit', this.loan.id]);
     body.Loan.updating_user = req.user.id;
     if (this.loan.contract_state === null && body.Loan.contract_state === 'sent_to_loaner') {
     } else if (this.loan.contract_state === 'sent_to_loaner' && body.Loan.contract_state === 'signature_received' &&
@@ -114,7 +114,7 @@ action(function put_contract_state() {
 });
 
 action(function loan_state() {
-    this.title = t('loans.loan_state_edit');
+    this.title = t(['loans.loan_state_edit', this.loan.id]);
     switch(params.format) {
         case "json":
             send(this.loan);
@@ -126,7 +126,7 @@ action(function loan_state() {
 
 action(function put_loan_state() {
     var loan = this.loan;
-    this.title = t('loans.loan_state_edit');
+    this.title = t(['loans.loan_state_edit', this.loan.id]);
     body.Loan.updating_user = req.user.id;
     if (this.loan.loan_state === null && body.Loan.loan_state === 'loaned' &&
       req.user.can('receive loans')) {

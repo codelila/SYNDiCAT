@@ -1,4 +1,5 @@
 de:
+  logged_in_as: 'Angemeldet als %'
   cancel: 'Abbrechen'
   loans:
     # UI elements
@@ -9,8 +10,8 @@ de:
     new: 'Neuer Direktkredit'
     new_breadcrumb: 'neu'
 
-    contract_state_edit: 'Vertragsstatus für Direktkredit %'
-    loan_state_edit: 'Kreditstatus für Direktkredit % aktualisieren'
+    contract_state_edit: 'Vertragsstatus für Direktkredit #%'
+    loan_state_edit: 'Kreditstatus für Direktkredit #%'
 
     edit_contract_state: 'Vertragsstatus bearbeiten'
     edit_loan_state: 'Kreditstatus bearbeiten'
