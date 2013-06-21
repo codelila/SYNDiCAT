@@ -53,7 +53,7 @@ de:
       descriptions:
         value: 'Der Kreditbetrag in Euro, ohne das Eurozeichen'
         interest_yearly_to: 'Nur ausfüllen, falls jährliche Zinszahlungen gewünscht sind!'
-        timespans: 'zum Beispiel »3 Monate«, »1 Jahr«'
+        timespans: 'in Monaten'
         dates: 'Ein Datum im Format YYYY-MM-DD, also zum Beispiel 2014-05-01 für den 1. Mai 2014'
 
   validate:

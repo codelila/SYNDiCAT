@@ -1,12 +1,22 @@
 module.exports = function (compound, Loan) {
-  // define Loan here
-  Loan.validate('value', function (err) {
-    if (!(Number(this.value) > 0)) {
-      err();
+  function validateNumber(field) {
+    return function (err) {
+      if (Number.isNaN(Number(this[field]))) {
+        err();
+      }
     };
-  }, {message: 'validate.positive_number'});
+  }
 
-  Loan.validatesPresenceOf('minimum_term', {message: 'validate.presence_of'});
+  function positiveNumber(field) {
+    Loan.validate(field, function (err) {
+      if (!(Number(this[field]) > 0)) {
+        err();
+      };
+    }, {message: 'validate.positive_number'});
+  }
+
+  positiveNumber('value');
+  positiveNumber('minimum_term');
   Loan.validate('cancelation_period', function (err) {
     if (this.cancelation_period && this.granted_until) {
       err();
@@ -17,13 +27,10 @@ module.exports = function (compound, Loan) {
       err();
     }
   }, {message: 'validate.one_of_and_granted_until'});
+  Loan.validate('cancelation_period', validateNumber('cancelation_period'), {message: 'validate.number'});
   Loan.validatesFormatOf('granted_until', {with: /^\d{4}-\d{2}-\d{2}$/, message: 'validate.date', allowBlank: true});
 
-  Loan.validate('rate_of_interest', function (err) {
-    if (Number.isNaN(Number(this.rate_of_interest))) {
-      err();
-    }
-  }, {message: 'validate.number'});
+  Loan.validate('rate_of_interest', validateNumber('rate_of_interest'), {message: 'validate.number'});
 
   Loan.validatesPresenceOf('loaner_name', {message: 'validate.presence_of'});
   Loan.validatesPresenceOf('loaner_address', {message: 'validate.presence_of'});
