@@ -1,7 +1,7 @@
 <p>
 <% switch (loan.contract_state) {
 case null: %>
-  Bitte fülle die Vorlage für Direktkredite mit den folgenden Angaben.
+  Bitte fülle die Vorlage für Direktkredite mit den folgenden Angaben oder nimm den <a href="<%- pathTo.contract_loan(loan) %>">vorausgefüllten Vertrag</a>.
   Den ausgefüllten Vertrag musst du dann an den_die Direktkreditgeber_in schicken.
 <% break; case 'sent_to_loaner': %>
   Der Vertrag wurde an den_die Kreditgeber_in verschickt.

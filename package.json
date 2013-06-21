@@ -14,6 +14,7 @@
   , "co-assets-compiler": "*"
   , "jugglingdb-sqlite3": ""
   , "connect-roles": ""
+  , "node-pdf": ""
   },
   "devDependencies":
   { "nodeunit": "*"

@@ -4,6 +4,8 @@ exports.routes = function (map) {
       loan.put('contract_state', 'loans#put_contract_state');
       loan.get('loan_state', 'loans#loan_state');
       loan.put('loan_state', 'loans#put_loan_state');
+
+      loan.get('contract', 'loans#contract');
     });
 
     map.root('loans#index');

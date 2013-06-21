@@ -1,0 +1,111 @@
+%{{=<< >>=}}
+
+\documentclass[]{scrartcl}
+
+\usepackage[ngerman]{babel}
+
+% Unicode font for checkboxes
+\usepackage{fontspec}
+\setmainfont{DejaVu Sans}
+
+\usepackage{scrjura}
+
+\usepackage{eurosym} % For euro sign
+
+% Need more space
+\usepackage[top=2cm, left=2.8cm, right=2.8cm, bottom=3.6cm]{geometry}
+
+\usepackage{fancyhdr}
+
+\setlength{\footskip}{35pt}
+\fancyhfoffset{0.6cm}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+\pagestyle{fancy} {
+  \fancyhead[L]{Kreditvertrag Nr. <<contract.nr>>}
+  \fancyhead[R]{Seite \thepage\ von 2}
+  \fancyfoot[L]{Hauswärts GmbH i.G. \\
+  Kontonummer: 1020153845 \\
+  BLZ: 120 300 00 \\
+  Deutsche Kreditbank AG}
+  \fancyfoot[C]{Geschäftsführung: \\
+  Franziska Heine, \\ Julian Irlenkäuser}
+  \fancyfoot[R]{Hauswärts GmbH i.G. \\
+  Marchlewskistr. 101 \\
+  10243 Berlin
+  }
+}
+
+\title{\vspace{-10pt}Kreditvertrag Nr. <<contract.nr>>\vspace{-30pt}}
+\date{}
+
+\begin{document}
+\maketitle \thispagestyle{fancy}
+
+\noindent Zwischen -Darlehensgeber/in- \\ \\
+ \textbf{<<loaner.name>>\\ <<loaner.address>>}  \\ \\
+und der <<debtor.name>>, <<debtor.address>> als Darlehensnehmerin wird folgender Vertrag geschlossen:
+
+% Vertragstext beginnt
+\begin{contract}
+
+\Paragraph{title={Darlehensbetrag}}
+
+Die <<debtor.name>> erhält ein Darlehen in Höhe von \textbf{\EUR{<<contract.value>>}} (in Worten: <<contract.value_in_words>>). \\
+Ändert sich die Darlehenssumme durch weitere Einzahlungen oder Teilrückzahlungen, so behalten die
+übrigen Vertragsvereinbarungen ihre Gültigkeit.
+
+\Paragraph{title={Einzahlung}}
+Der Darlehensbetrag wird überwiesen auf das Konto der <<debtor.name>>.
+
+\Paragraph{title=Verzinsung}
+Das Darlehen wird  mit <<contract.interest>>\~\% jährlich verzinst. \\
+<<contract.yearly_interest_tick>> Die Zinsen werden zum Jahresende dem folgenden Konto gutgeschrieben: \\<<contract.yearly_interest_to>> \\
+<<contract.cumulated_interest_tick>> Die Zinsen werden kumuliert und mit Rückzahlung des Darlehensbetrags ausgezahlt.
+
+\Paragraph{title={Kontomitteilung}}
+Jeweils nach Ablauf eines Kalenderjahres erhält der/die Darlehensgeber/in eine Mitteilung über den
+Kontostand, Ein- und Auszahlungen und über Zinserträge.
+
+\Paragraph{title=Kündigungsfrist}
+Das Darlehen wird mindestens für <<contract.minimum_term>> Monate (Mindestlaufzeit) \\
+ <<contract.cancelation_period_tick>> unbefristet gewährt mit einer Kündigungsfrist von <<contract.cancelation_period>> Monaten. \\
+ <<contract.granted_until_tick>> befristet gewährt bis zum <<contract.granted_until>> (Datum).
+
+\Paragraph{title=Zweck}
+% FIXME
+Das Darlehen wird verwendet zum Kauf und zur Sanierung des Hauses Burgemeisterstr. 17/18, in 12103 Berlin, um dies sozialgebunden zu vermieten und zu verwalten. Des Weiteren dient es zur Finanzierung anderer anfallender Kosten der Hauswärts GmbH i.G. bezüglich des Hauses und der Verwirklichung des Hausprojektes in der Burgemeisterstr. 17/18. Die niedrigere Verzinsung des Darlehens als marktüblich ermöglicht tragbare, soziale Mietpreise.
+
+\Paragraph{title=Rangrücktrittsklausel}
+“Die Rückzahlung der Darlehen und die Zahlung von Zinsen kann nicht verlangt werden, solange der Darlehensnehmer dieses Kapital zur Erfüllung seiner (nicht nachrangigen) fälligen Verbindlichkeiten benötigt, d.h. es handelt sich um nachrangige Darlehen. Die Darlehensgeber können ihren Anspruch auf Rückzahlung der Darlehen und auf die Auszahlung von Zinsen nicht geltend machen, wenn dies zur Überschuldung oder Zahlungsunfähigkeit des Darlehensnehmers führt. Auch im Insolvenz- oder Liquidationsfall treten die Darlehensgeber mit ihrer Darlehensforderung im Rang hinter die Forderungen aller Gläubiger zurück. Die Rückzahlung des Darlehens kann insofern vom Darlehensnehmer nicht garantiert werden, d.h. es handelt sich nicht um einen unbedingten Rückzahlungsanspruch.” (Diese Klausel ist eine Anforderung der Bundesanstalt für Finanzdienstleistungsaufsicht)
+
+\Paragraph{title=Auflösende Bedingung}
+Sollte der Kauf des Hauses Burgemeisterstr. 17/18, in 12103 Berlin durch die Hauswärts GmbH i.G. nicht zustande kommen, wird der Kreditvertrag in beiderseitigem Einverständnis aufgelöst und die Darlehenssumme umgehend an den/die Darlehensgeber/in ausgezahlt.
+
+\end{contract}
+
+% Hier kommen die Unterschriten hin
+\vspace{1,5 cm}
+\begin{tabular}{p{7cm}p{.5cm}l}
+\dotfill \\
+Ort, Datum
+\end{tabular}%
+\hfill
+\begin{tabular}{p{7cm}p{.5cm}l}
+\dotfill \\
+Ort, Datum
+\end{tabular}%
+
+\vspace{1,5 cm}
+\begin{tabular}{p{7cm}p{.5cm}l}
+\dotfill \\
+Unterschrift Darlehensgeber/in
+\end{tabular}%
+\hfill
+\begin{tabular}{p{7cm}p{.5cm}l}
+\dotfill \\
+Unterschrift Darlehensnehmerin
+\end{tabular}%
+
+\end{document}

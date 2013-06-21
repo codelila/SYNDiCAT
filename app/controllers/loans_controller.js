@@ -1,7 +1,7 @@
 load('application');
 
 before(loadLoan, {
-    only: ['show', 'edit', 'contract_state', 'put_contract_state', 'loan_state', 'put_loan_state']
+    only: ['show', 'edit', 'contract_state', 'put_contract_state', 'loan_state', 'put_loan_state', 'contract']
     });
 
 action('new', function () {
@@ -154,6 +154,95 @@ action(function put_loan_state() {
             });
         });
     });
+});
+
+function inWords(val, joinAfter) {
+  function join(a, joiner, b) {
+    var ret = a;
+    if (a && b) {
+      ret += joiner;
+    }
+    ret += b;
+    return ret;
+  }
+
+  if (val < 13) {
+    return {
+      0: '',
+      1: joinAfter ? 'ein' : 'eins',
+      2: 'zwei',
+      3: 'drei',
+      4: 'vier',
+      5: 'fünf',
+      6: 'sechs',
+      7: 'sieben',
+      8: 'acht',
+      9: 'neun',
+      10: 'zehn',
+      11: 'elf',
+      12: 'zwölf'
+    }[val];
+  } else if (val < 100) {
+    var prefix = inWords(val % 10);
+    return join(prefix, val > 20 ? 'und' : '', {
+      1: 'zehn',
+      2: 'zwanzig',
+      3: 'dreißig',
+      4: 'vierzig',
+      5: 'fünfzig',
+      6: 'sechzig',
+      7: 'siebzig',
+      8: 'achtzig',
+      9: 'neunzig'
+    }[Math.floor(val / 10)]);
+  } else if (val < 1000) {
+    return join(inWords(Math.floor(val / 100), true) + 'hundert', 'und', inWords(val % 100));
+  } else if (val < 1000000) {
+    return join(inWords(Math.floor(val / 1000), true) + 'tausend', 'und', inWords(val % 1000));
+  } else {
+    throw new Error('too big');
+  }
+}
+
+action(function contract() {
+  var render = require('node-pdf').render;
+  var loan = this.loan;
+
+  function tick(b) {
+    return b ? '☑' : '☐';
+  }
+
+  var data = {
+    debtor: {
+      name: 'Hauswärts GmbH i.G.',
+      address: 'Marchlewskistr. 101, 10243 Berlin'
+    }, loaner: {
+      name: loan.loaner_name,
+      address: loan.loaner_address.replace(/\n/g, '\\\\')
+    }, contract: {
+      nr: loan.id,
+      value: loan.value,
+      value_in_words: inWords(loan.value),
+      interest: loan.rate_of_interest,
+      minimum_term: loan.minimum_term,
+      yearly_interest_to: loan.interest_yearly_to.replace(/\n/g, '\\\\'),
+      yearly_interest_tick: tick(loan.interest_yearly_to),
+      cumulated_interest_tick: tick(!loan.interest_yearly_to),
+      cancelation_period_tick: tick(loan.cancelation_period),
+      granted_until_tick: tick(loan.granted_until),
+      granted_until: loan.granted_until, // FIXME: format
+      cancelation_period: loan.cancelation_period
+    }
+  };
+
+  render(app.root + '/var/contract-template.tex', data, function (err,rs) {
+    if (err) {
+      console.log(err);
+    } else {
+      res.attachment('kreditvertrag-' + loan.id + '.pdf');
+      rs.pipe(res);
+    }
+  });
 });
 
 function loadLoan() {
