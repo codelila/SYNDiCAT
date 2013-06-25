@@ -2,7 +2,7 @@
 <fieldset>
 <legend>Kreditdetails</legend>
 <div class="control-group">
-   <%- form.label("value", false, {class: "control-label"}) %>
+   <%- form.label("value", false, {class: "control-label mandatory"}) %>
    <div class="controls">
       <div class="input-append">
        <%- form.input("value") %>
@@ -12,7 +12,7 @@
    </div>
 </div>
 <div class="control-group">
-   <%- form.label("rate_of_interest", false, {class: "control-label"}) %>
+   <%- form.label("rate_of_interest", false, {class: "control-label mandatory"}) %>
    <div class="controls">
       <div class="input-append">
        <%- form.input("rate_of_interest") %>
@@ -28,7 +28,7 @@
    </div>
 </div>
 <div class="control-group">
-   <%- form.label("minimum_term", false, {class: "control-label"}) %>
+   <%- form.label("minimum_term", false, {class: "control-label mandatory"}) %>
    <div class="controls">
        <%- form.input("minimum_term") %>
        <%- inputDesc("timespans") %>
@@ -53,13 +53,13 @@
 <fieldset>
 <legend>Kreditgeber_in</legend>
 <div class="control-group">
-   <%- form.label("loaner_name", false, {class: "control-label"}) %>
+   <%- form.label("loaner_name", false, {class: "control-label mandatory"}) %>
    <div class="controls">
        <%- form.input("loaner_name") %>
    </div>
 </div>
 <div class="control-group">
-   <%- form.label("loaner_address", false, {class: "control-label"}) %>
+   <%- form.label("loaner_address", false, {class: "control-label mandatory"}) %>
    <div class="controls">
        <%- form.textarea("loaner_address", {rows: 3}) %>
    </div>
@@ -71,7 +71,7 @@
    </div>
 </div>
 <div class="control-group">
-   <%- form.label("loaner_phone", false, {class: "control-label"}) %>
+   <%- form.label("loaner_phone", false, {class: "control-label mandatory"}) %>
    <div class="controls">
        <%- form.input("loaner_phone") %>
    </div>
