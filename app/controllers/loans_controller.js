@@ -157,9 +157,9 @@ action(function put_loan_state() {
 });
 
 var inWords = require('in-words').de;
+var render = require('node-pdf').render;
 
 action(function contract() {
-  var render = require('node-pdf').render;
   var loan = this.loan;
 
   function tick(b) {
@@ -189,7 +189,7 @@ action(function contract() {
     }
   };
 
-  render(app.root + '/var/contract-template.tex', data, function (err,rs) {
+  render(app.root + '/config/contract-template.tex', data, function (err,rs) {
     if (err) {
       console.log(err);
     } else {
