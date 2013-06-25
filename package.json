@@ -15,6 +15,7 @@
   , "jugglingdb-sqlite3": ""
   , "connect-roles": ""
   , "node-pdf": ""
+  , "in-words": ""
   },
   "devDependencies":
   { "nodeunit": "*"
