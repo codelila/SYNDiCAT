@@ -157,7 +157,7 @@ action(function put_loan_state() {
 });
 
 var inWords = require('in-words').de;
-var render = require('node-pdf').render;
+var pdf = require('node-pdf');
 
 action(function contract() {
   var loan = this.loan;
@@ -168,7 +168,7 @@ action(function contract() {
 
   var data = {
     debtor: {
-      name: 'Hauswärts GmbH i.G.',
+      name: 'Hauswärts GmbH',
       address: 'Marchlewskistr. 101, 10243 Berlin'
     }, loaner: {
       name: loan.loaner_name,
@@ -189,7 +189,7 @@ action(function contract() {
     }
   };
 
-  render(app.root + '/config/contract-template.tex', data, function (err,rs) {
+  pdf.render(app.root + '/config/contract-template.tex', data, function (err,rs) {
     if (err) {
       console.log(err);
     } else {
