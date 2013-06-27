@@ -21,7 +21,7 @@ exports.startTable = function (r, obj) {
   var t = this.viewContext.t;
   return {
     row: function (field) {
-      return '<tr><th>' +  t('models.' + r + '.fields.' + field) + '</th><td>' + safe_tags_replace(obj[field]) + '</td></tr>';
+      return '<tr class="table-row-' + field + '"><th>' +  t('models.' + r + '.fields.' + field) + '</th><td>' + safe_tags_replace(obj[field]) + '</td></tr>';
     }
   };
 };
