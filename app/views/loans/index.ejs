@@ -6,29 +6,11 @@
 
 <div class="row">
     <div class="span12">
-        <%if (loans.length > 0) { %>
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th><%= t('loans.id') %></th>
-                    <th><%= t('loans.value') %></th>
-                    <th><%= t('loans.actions') %></th>
-                </tr>
-            </thead>
-            <tbody>
-                <% loans.forEach(function (loan) { %>
-                <tr>
-                    <td><strong><%- link_to('#' + loan.id, pathTo.loan(loan)) %></strong></td>
-                    <td><%- t(['loans.in_currency', loan.value, '€']) %></td>
-                    <td></td>
-                </tr>
-                <% }); %>
-            </tbody>
-        </table>
-        <% } else { %>
-        <p class="alert alert-block alert-info">
-            <strong><%= t('loans.no_loans') %></strong>
-        </p>
-        <% } %>
+<h2><%= t('loans.open') %></h2>
+<% var _loans = loans.filter(function (loan) {return loan.loan_state === null}); %>
+<%- include _table %>
+<h2><%= t('loans.current') %></h2>
+<% _loans = loans.filter(function (loan) {return loan.loan_state === 'loaned'}); %>
+<%- include _table %>
     </div>
 </div>

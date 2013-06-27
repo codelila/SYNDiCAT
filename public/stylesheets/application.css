@@ -4,3 +4,7 @@ body {
 .mandatory::after {
   content: ' *';
 }
+.table .sum {
+  text-align: right;
+  font-weight: bold;
+}

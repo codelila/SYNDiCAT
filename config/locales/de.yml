@@ -16,6 +16,10 @@ de:
     back_to_index: 'Zurück zur Übersicht'
     create: 'Eintragen'
 
+    open: 'Ausstehende Direktkredite'
+    current: 'Laufende Direktkredite'
+    sum: 'Summe'
+
     # Felder
     id: 'Nummer'
     value: 'Betrag'
