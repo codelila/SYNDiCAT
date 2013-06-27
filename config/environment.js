@@ -22,6 +22,7 @@ module.exports = function (compound) {
         app.set('cssEngine', 'stylus');
         app.set('i18n', 'on');
         app.set('defaultLocale', 'de');
+        app.set('autoupdate', 'on');
 
         app.use(express.bodyParser());
         app.use(express.cookieParser('secret'));
