@@ -8,7 +8,7 @@
 <% } %>
 
     <%if (steps.filter(function (s) { return s.isNextStep; }).length > 0) {%>
-      <%- form.submit('<i class="icon-ok icon-white"></i> Update loan', {class: 'btn btn-primary'}) %> or
+      <%- form.submit('<i class="icon-ok icon-white"></i> ' + t('loans.update'), {class: 'btn btn-primary'}) %> <%= t('loans.or')%>
     <%} else {%>
       Nichts mehr zu tun.
     <% } %>
