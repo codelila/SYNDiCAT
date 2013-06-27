@@ -5,16 +5,10 @@ de:
     # UI elements
     index: 'Übersicht'
     index_breadcrumb: 'Direktkredite'
-    details: 'Details für Direktkredit #%'
+    details: 'Direktkredit #%'
     details_breadcrumb: '#%'
     new: 'Neuer Direktkredit'
     new_breadcrumb: 'neu'
-
-    contract_state_edit: 'Vertragsstatus für Direktkredit #%'
-    loan_state_edit: 'Kreditstatus für Direktkredit #%'
-
-    edit_contract_state: 'Vertragsstatus bearbeiten'
-    edit_loan_state: 'Kreditstatus bearbeiten'
 
     actions: 'Aktionen'
     signature_received: 'Unterschrift eingegangen'
@@ -33,6 +27,25 @@ de:
     no_loans: 'Bisher keine Direktkredite eingetragen'
     cannot_create: 'Direktkredit kann nicht eingetragen werden'
     created: 'Direktkredit eingetragen'
+
+    contract_state:
+      sent_to_loaner:
+        desc: 'Der Vertrag wurde noch nicht abgeschickt. Bitte fülle die Vorlage für Direktkredite mit den oben stehenden Angaben oder nimm den <a href="%">vorausgefüllten Vertrag</a>. Den Vertrag musst du dann an den_die Direktkreditgeber_in schicken.'
+        active: ' Ich habe den Vertrag abgeschickt'
+        passive: 'Der Vertrag wurde abgeschickt'
+      signature_received:
+        desc: 'Ist der unterschriebene Vertrag bei dir angekommen? Wenn ja: Bitte vergleiche die oben stehenden Angaben gründlich mit dem unterschriebenen Vertrag. Stimmen alle Angaben überein? Ist der Vertrag unterschrieben?'
+        active: 'Ich habe den unterschriebenen Vertrag erhalten'
+        passive: 'Der unterschriebene Vertrag ist angekommen'
+      signature_sent:
+        desc: 'Nachdem das Geld auf dem Konto eingegangen ist, muss der Vertrag gegengezeichnet und zurückgeschickt werden.'
+        active: 'Ich habe den unterschriebenen Vertrag zurückgeschickt'
+        passive: 'Der unterschriebene Vertrag wurde zurückgeschickt'
+    loan_state:
+      loaned:
+        desc: 'Hast du eine Einzahlung für diesen Direktkredit erhalten? Bitte vergleiche Kreditnummer, Kreditgeber_in und Betrag.'
+        active: 'Ich habe den Kredit erhalten'
+        passive: 'Der Kredit ist auf dem Konto eingegangen'
 
   models:
     Loan:

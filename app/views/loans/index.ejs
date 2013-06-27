@@ -20,7 +20,7 @@
                 <tr>
                     <td><strong><%- link_to('#' + loan.id, pathTo.loan(loan)) %></strong></td>
                     <td><%- t(['loans.in_currency', loan.value, '€']) %></td>
-                    <td><% _actions_button_class='btn-mini'%><%- include _actions %></td>
+                    <td></td>
                 </tr>
                 <% }); %>
             </tbody>

@@ -1,3 +1,4 @@
+<h2>Details</h2>
 <% var table = startTable('Loan', loan) %>
 <table class="table table-bordered">
     <tbody>
@@ -29,8 +30,5 @@
     </tbody>
 </table>
 
-<div class="well">
-    <% _actions_button_class=""%><%- include _actions %>
-    or
-    <%- link_to(t('loans.back_to_index'), pathTo.loans) %>
-</div>
+<h2>Status</h2>
+<%- include contract_state %>

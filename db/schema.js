@@ -46,6 +46,8 @@ var Loan = describe('Loan', function () {
     property('date_contract_sent_to_loaner', Date);
     property('user_contract_signature_received', String);
     property('date_contract_signature_received', Date);
+    property('user_contract_signature_sent', String);
+    property('date_contract_signature_sent', Date);
     property('user_loan_loaned', String);
     property('date_loan_loaned', Date);
     property('user_loan_repaid', String);

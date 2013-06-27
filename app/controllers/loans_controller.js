@@ -1,7 +1,7 @@
 load('application');
 
 before(loadLoan, {
-    only: ['show', 'edit', 'contract_state', 'put_contract_state', 'loan_state', 'put_loan_state', 'contract']
+    only: ['show', 'edit', 'put_state', 'contract']
     });
 
 action('new', function () {
@@ -69,68 +69,21 @@ action(function show() {
     }
 });
 
-action(function contract_state() {
-    this.title = t(['loans.contract_state_edit', this.loan.id]);
-    switch(params.format) {
-        case "json":
-            send(this.loan);
-            break;
-        default:
-            render();
-    }
-});
-
-action(function put_contract_state() {
+action(function put_state() {
     var loan = this.loan;
-    this.title = t(['loans.contract_state_edit', this.loan.id]);
     body.Loan.updating_user = req.user.id;
     if (this.loan.contract_state === null && body.Loan.contract_state === 'sent_to_loaner') {
     } else if (this.loan.contract_state === 'sent_to_loaner' && body.Loan.contract_state === 'signature_received' &&
       req.user.can('receive signed contracts')) {
-    } else {
+    } else if (this.loan.contract_state === 'signature_received' && body.Loan.contract_state === 'signature_sent' &&
+      req.user.can('receive signed contracts')) {
+    } else if (body.Loan.contract_state) {
       console.log(req.user.id + ' trying to do bad stuff');
       delete body.Loan.contract_state;
     }
-    this.loan.updateAttributes(body.Loan, function (err) {
-        respondTo(function (format) {
-            format.json(function () {
-                if (err) {
-                    send({code: 500, error: loan && loan.errors || err});
-                } else {
-                    send({code: 200, data: loan});
-                }
-            });
-            format.html(function () {
-                if (!err) {
-                    flash('info', 'Loan updated');
-                    redirect(path_to.loan(loan));
-                } else {
-                    flash('error', 'Loan can not be updated');
-                    render('contract_state');
-                }
-            });
-        });
-    });
-});
-
-action(function loan_state() {
-    this.title = t(['loans.loan_state_edit', this.loan.id]);
-    switch(params.format) {
-        case "json":
-            send(this.loan);
-            break;
-        default:
-            render();
-    }
-});
-
-action(function put_loan_state() {
-    var loan = this.loan;
-    this.title = t(['loans.loan_state_edit', this.loan.id]);
-    body.Loan.updating_user = req.user.id;
     if (this.loan.loan_state === null && body.Loan.loan_state === 'loaned' &&
       req.user.can('receive loans')) {
-    } else {
+    } else if (body.Loan.loan_state) {
       console.log(req.user.id + ' trying to do bad stuff');
       delete body.Loan.loan_state;
     }
@@ -146,11 +99,10 @@ action(function put_loan_state() {
             format.html(function () {
                 if (!err) {
                     flash('info', 'Loan updated');
-                    redirect(path_to.loan(loan));
                 } else {
                     flash('error', 'Loan can not be updated');
-                    render('loan_state');
                 }
+                redirect(path_to.loan(loan));
             });
         });
     });
@@ -208,6 +160,29 @@ function loadLoan() {
             redirect(path_to.loans);
         } else {
             this.loan = loan;
+
+            this.steps = [{
+              isNextStep: loan.contract_state === null,
+              desc: t(['loans.contract_state.sent_to_loaner.desc', pathTo.contract_loan(loan)]),
+              stateType: 'contract_state',
+              state: 'sent_to_loaner',
+              isSet: loan.contract_state !== null,
+            }, {
+              isNextStep: loan.contract_state === 'sent_to_loaner' && req.user.can('receive signed contracts'),
+              stateType: 'contract_state',
+              state: 'signature_received',
+              isSet: loan.contract_state === 'signature_received' || loan.contract_state === 'signature_sent',
+            }, {
+              isNextStep: loan.loan_state === null && req.user.can('receive loans'),
+              stateType: 'loan_state',
+              state: 'loaned',
+              isSet: loan.loan_state !== null,
+            }, {
+              isNextStep: loan.contract_state === 'signature_received' && loan.loan_state === 'loaned' && req.user.can('receive signed contracts'),
+              stateType: 'contract_state',
+              state: 'signature_sent',
+              isSet: loan.contract_state === 'signature_sent'
+            }];
             next();
         }
     }.bind(this));

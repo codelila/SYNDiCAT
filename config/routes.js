@@ -1,9 +1,6 @@
 exports.routes = function (map) {
     map.resources('loans', {only: ['new', 'create', 'index', 'show']}, function (loan) {
-      loan.get('contract_state', 'loans#contract_state');
-      loan.put('contract_state', 'loans#put_contract_state');
-      loan.get('loan_state', 'loans#loan_state');
-      loan.put('loan_state', 'loans#put_loan_state');
+      loan.put('state', 'loans#put_state');
 
       loan.get('contract', 'loans#contract');
     });

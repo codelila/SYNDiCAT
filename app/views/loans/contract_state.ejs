@@ -1,70 +1,18 @@
-<p>
-<% switch (loan.contract_state) {
-case null: %>
-  Bitte fülle die Vorlage für Direktkredite mit den folgenden Angaben oder nimm den <a href="<%- pathTo.contract_loan(loan) %>">vorausgefüllten Vertrag</a>.
-  Den ausgefüllten Vertrag musst du dann an den_die Direktkreditgeber_in schicken.
-<% break; case 'sent_to_loaner': %>
-  Der Vertrag wurde an den_die Kreditgeber_in verschickt.
-  <%if (user.can('receive_signed_contracts')) {%>
-  Ist der unterschriebene Vertrag bei dir angekommen? Wenn ja: Bitte vergleiche
-  die folgenden Angaben gründlich mit dem unterschriebenen Vertrag.
-  Stimmen alle Angaben überein? Ist der Vertrag unterschrieben?
-  <%}%>
-<% break; case 'signature_received': %>
-  Der Vertrag ist bereits unterschrieben.
-<% } %>
-</p>
 
-<% var table = startTable('Loan', loan) %>
-<table class="table table-bordered">
-    <tbody>
-      <%- table.row('id') %>
-      <%- table.row('value') %>
-      <%- table.row('rate_of_interest') %>
-      <%- table.row('interest_yearly_to') %>
-      <%- table.row('minimum_term') %>
-      <%- table.row('cancelation_period') %>
-      <%- table.row('granted_until') %>
-      <%- table.row('loaner_name') %>
-      <%- table.row('loaner_address') %>
-      <%- table.row('loaner_email') %>
-      <%- table.row('loaner_phone') %>
-      <%- table.row('notes') %>
-    </tbody>
-</table>
-
-<% var form = formFor(loan, {action: pathTo.contract_state_loan(loan), method: 'PUT', id: "loan-form", class: 'form-horizontal'}) %>
+<% var form = formFor(loan, {action: pathTo.loan_state(loan), method: 'PUT', id: "loan-form", class: 'form-horizontal'}) %>
 <%- form.begin() %>
 
-<% var is_next_step = loan.contract_state === null %>
-<div class="control-group">
-  <div class="controls">
-    <label class="checkbox">
-      <input type="checkbox" name="Loan[contract_state]" value="sent_to_loaner" <%if (!is_next_step) { %>disabled<% } %>
-        <%if (loan.contract_state !== null) {%>checked<%}%>>
-      <%if (is_next_step) { %> Ich habe den Vertrag abgeschickt <% } else { %> Der Vertrag wurde abgeschickt <% } %>
-    </label>
-  </div>
-</div>
+<% var state; for (var i = 0; i < steps.length; ++i) {
+  state = steps[i];%>
+<%- include _state_checkbox %>
+<% } %>
 
-<% is_next_step = loan.contract_state === 'sent_to_loaner' && user.can('receive signed contracts')%>
-<div class="control-group">
-  <div class="controls">
-    <label class="checkbox">
-      <input type="checkbox" name="Loan[contract_state]" value="signature_received" <%if (!is_next_step) { %>disabled<% } %>
-        <%if (loan.contract_state === 'signature_received') {%>checked<%}%>>
-      <%if (is_next_step) { %> Ich habe den unterschriebenen Vertrag erhalten <% } else { %> Der unterschriebene Vertrag ist angekommen <% } %>
-    </label>
-  </div>
-</div>
-
-<div class="form-actions">
-    <%if (loan.contract_state === null || (loan.contract_state === 'sent_to_loaner'
-      && user.can('receive signed contracts'))) {%>
+    <%if (steps.filter(function (s) { return s.isNextStep; }).length > 0) {%>
       <%- form.submit('<i class="icon-ok icon-white"></i> Update loan', {class: 'btn btn-primary'}) %> or
     <%} else {%>
       Nichts mehr zu tun.
     <% } %>
-    <%- linkTo('Cancel', pathTo.loan(loan), {class: 'btn'}) %>
+    <%- linkTo(t('loans.back_to_index'), pathTo.loans()) %>
 </div>
+
 <%- form.end() %>

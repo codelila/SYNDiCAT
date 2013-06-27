@@ -1,0 +1,15 @@
+<% if(state.isNextStep) { %>
+<p>
+  <%- state.desc || t('loans.' + state.stateType + '.' + state.state + '.desc') %>
+</p>
+<% } %>
+<div class="control-group">
+  <div class="controls">
+    <label class="checkbox">
+      <input type="checkbox" name="Loan[<%= state.stateType %>]" value="<%= state.state %>" <%if (!state.isNextStep) { %>disabled<% } %>
+        <%if (state.isSet) {%>checked<%}%>>
+      <%- t('loans.' + state.stateType + '.' + state.state + '.' + (state.isNextStep ? 'active' : 'passive')) %>
+    </label>
+  </div>
+</div>
+
