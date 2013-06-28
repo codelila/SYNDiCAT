@@ -2,26 +2,25 @@
 
 \documentclass[]{scrartcl}
 
+% German
 \usepackage[ngerman]{babel}
 
-% Unicode font for checkboxes
+% We have to use a unicode font for the checkboxes
 \usepackage{fontspec}
 \setmainfont{DejaVu Sans}
 
-\usepackage{scrjura}
-
-\usepackage{eurosym} % For euro sign
+% Euro sign
+\usepackage{eurosym}
 
 % Need more space
 \usepackage[top=2cm, left=2.8cm, right=2.8cm, bottom=3.6cm]{geometry}
 
+% Header and footer
 \usepackage{fancyhdr}
-
 \setlength{\footskip}{35pt}
 \fancyhfoffset{0.6cm}
 \renewcommand{\headrulewidth}{0.4pt}
 \renewcommand{\footrulewidth}{0.4pt}
-
 \pagestyle{fancy} {
   \fancyhead[L]{Kreditvertrag Nr. <<contract.nr>>}
   \fancyhead[R]{Seite \thepage\ von 2}
@@ -39,8 +38,16 @@ HRB 150913 B}
   }
 }
 
+% Contract environment
+\usepackage{scrjura}
+
+% Title params
 \title{\vspace{-10pt}Kreditvertrag Nr. <<contract.nr>>\vspace{-30pt}}
 \date{}
+
+
+\newcommand{\addressStreet}{Burgemeisterstr. 17/18}
+\newcommand{\addressWithZIP}{\addressStreet, in 12103 Berlin}
 
 \begin{document}
 \maketitle \thispagestyle{fancy}
@@ -76,14 +83,13 @@ Das Darlehen wird mindestens für <<contract.minimum_term>> Monate (Mindestlaufz
  <<contract.granted_until_tick>> befristet gewährt bis zum <<contract.granted_until>> (Datum).
 
 \Paragraph{title=Zweck}
-% FIXME
-Das Darlehen wird verwendet zum Kauf und zur Sanierung des Hauses Burgemeisterstr. 17/18, in 12103 Berlin, um dies sozialgebunden zu vermieten und zu verwalten. Des Weiteren dient es zur Finanzierung anderer anfallender Kosten der Hauswärts GmbH i.G. bezüglich des Hauses und der Verwirklichung des Hausprojektes in der Burgemeisterstr. 17/18. Die niedrigere Verzinsung des Darlehens als marktüblich ermöglicht tragbare, soziale Mietpreise.
+Das Darlehen wird verwendet zum Kauf und zur Sanierung des Hauses \addressWithZIP, um dies sozialgebunden zu vermieten und zu verwalten. Des Weiteren dient es zur Finanzierung anderer anfallender Kosten der <<debtor.name>> bezüglich des Hauses und der Verwirklichung des Hausprojektes in der \addressStreet. Die niedrigere Verzinsung des Darlehens als marktüblich ermöglicht tragbare, soziale Mietpreise.
 
 \Paragraph{title=Rangrücktrittsklausel}
 “Die Rückzahlung der Darlehen und die Zahlung von Zinsen kann nicht verlangt werden, solange der Darlehensnehmer dieses Kapital zur Erfüllung seiner (nicht nachrangigen) fälligen Verbindlichkeiten benötigt, d.h. es handelt sich um nachrangige Darlehen. Die Darlehensgeber können ihren Anspruch auf Rückzahlung der Darlehen und auf die Auszahlung von Zinsen nicht geltend machen, wenn dies zur Überschuldung oder Zahlungsunfähigkeit des Darlehensnehmers führt. Auch im Insolvenz- oder Liquidationsfall treten die Darlehensgeber mit ihrer Darlehensforderung im Rang hinter die Forderungen aller Gläubiger zurück. Die Rückzahlung des Darlehens kann insofern vom Darlehensnehmer nicht garantiert werden, d.h. es handelt sich nicht um einen unbedingten Rückzahlungsanspruch.” (Diese Klausel ist eine Anforderung der Bundesanstalt für Finanzdienstleistungsaufsicht)
 
 \Paragraph{title=Auflösende Bedingung}
-Sollte der Kauf des Hauses Burgemeisterstr. 17/18, in 12103 Berlin durch die Hauswärts GmbH i.G. nicht zustande kommen, wird der Kreditvertrag in beiderseitigem Einverständnis aufgelöst und die Darlehenssumme umgehend an den/die Darlehensgeber/in ausgezahlt.
+Sollte der Kauf des Hauses \addressWithZIP\ durch die <<debtor.name>> nicht zustande kommen, wird der Kreditvertrag in beiderseitigem Einverständnis aufgelöst und die Darlehenssumme umgehend an den/die Darlehensgeber/in ausgezahlt.
 
 \end{contract}
 
