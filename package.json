@@ -16,6 +16,7 @@
   , "connect-roles": ""
   , "node-pdf": ""
   , "in-words": ""
+  , "moment": ""
   },
   "devDependencies":
   { "nodeunit": "*"

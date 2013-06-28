@@ -110,14 +110,12 @@ action(function put_state() {
 
 var inWords = require('in-words').de;
 var pdf = require('node-pdf');
+var moment = require('moment');
 
 action(function contract() {
   var loan = this.loan;
 
-  function tick(b) {
-    return b ? '☑' : '☐';
-  }
-
+  var grantedUntil = moment(loan.granted_until, 'YYYY-MM-DD');
   var data = {
     debtor: {
       name: 'Hauswärts GmbH',
@@ -128,16 +126,12 @@ action(function contract() {
     }, contract: {
       nr: loan.id,
       value: loan.value,
-      value_in_words: inWords(loan.value),
+      valueInWords: inWords(loan.value),
       interest: loan.rate_of_interest,
-      minimum_term: loan.minimum_term,
-      yearly_interest_to: loan.interest_yearly_to.replace(/\n/g, '\\\\'),
-      yearly_interest_tick: tick(loan.interest_yearly_to),
-      cumulated_interest_tick: tick(!loan.interest_yearly_to),
-      cancelation_period_tick: tick(loan.cancelation_period),
-      granted_until_tick: tick(loan.granted_until),
-      granted_until: loan.granted_until, // FIXME: format
-      cancelation_period: loan.cancelation_period
+      minimumTerm: loan.minimum_term,
+      yearlyInterestTo: loan.interest_yearly_to.replace(/\n/g, '\\\\'),
+      grantedUntil: grantedUntil && grantedUntil.lang('de').format('LL'),
+      cancelationPeriod: loan.cancelation_period
     }
   };
 
