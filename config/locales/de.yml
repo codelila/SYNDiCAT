@@ -82,3 +82,4 @@ de:
     date: 'muss ein Datum im Format YYYY-MM-DD sein'
     not_with_granted_until: 'darf nicht gleichzeitig mit einem festen Ablaufdatum angegeben werden'
     one_of_and_granted_until: 'oder festes Ablaufdatum muss angegeben werden'
+    together_with_cancelation_period: 'und Kündigungsfrist müssen zusammen angegeben werden'

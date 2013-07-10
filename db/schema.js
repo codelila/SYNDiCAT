@@ -25,7 +25,7 @@ var Loan = describe('Loan', function () {
     property('value', Number);
     property('rate_of_interest', Number);
     property('interest_yearly_to', Text);
-    property('minimum_term', Number);
+    property('minimum_term', String); // FIXME: This is an optional number and I don’t want zeroes to appear
     property('cancelation_period', String); // FIXME: This is an optional number and I don’t want zeroes to appear
     property('granted_until', String);
 

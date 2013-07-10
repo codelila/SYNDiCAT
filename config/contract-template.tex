@@ -36,6 +36,8 @@ HRB 150913 B}
   10243 Berlin
   }
 }
+\newcommand{\addressStreet}{Burgemeisterstr. 17/18}
+\newcommand{\addressWithZIP}{\addressStreet, in 12103 Berlin}
 
 % Contract environment
 \usepackage{scrjura}
@@ -44,8 +46,6 @@ HRB 150913 B}
 \title{\vspace{-10pt}Kreditvertrag Nr. <<contract.nr>>\vspace{-30pt}}
 \date{}
 
-\newcommand{\addressStreet}{Burgemeisterstr. 17/18}
-\newcommand{\addressWithZIP}{\addressStreet, in 12103 Berlin}
 \newcommand*{\yearlyInterestTo}{<<contract.yearlyInterestTo>>}
 \newcommand*{\cancelationPeriod}{<<contract.cancelationPeriod>>}
 \newcommand*{\interest}{<<contract.interest>>}
@@ -86,11 +86,11 @@ Jeweils nach Ablauf eines Kalenderjahres erhält der/die Darlehensgeber/in eine 
 Kontostand, Ein- und Auszahlungen und über Zinserträge.
 
 \Paragraph{title=Kündigungsfrist}
-Das Darlehen wird mindestens für <<contract.minimumTerm>> Monate (Mindestlaufzeit)
+Das Darlehen wird
 \ifx\cancelationPeriod\empty
  befristet gewährt bis zum <<contract.grantedUntil>> (Datum).
 \else
- unbefristet gewährt mit einer Kündigungsfrist von \cancelationPeriod\ Monaten.
+ mindestens für <<contract.minimumTerm>> Monate (Mindestlaufzeit) unbefristet gewährt mit einer Kündigungsfrist von \cancelationPeriod\ Monaten.
 \fi
 
 \Paragraph{title=Zweck}

@@ -7,8 +7,12 @@ module.exports = function (compound, Loan) {
     };
   }
 
-  function positiveNumber(field) {
+  function positiveNumber(field, opt) {
+    opt = opt || {};
     Loan.validate(field, function (err) {
+      if (opt.optional && this[field] === '') {
+        return;
+      }
       if (!(Number(this[field]) > 0)) {
         err();
       };
@@ -16,7 +20,21 @@ module.exports = function (compound, Loan) {
   }
 
   positiveNumber('value');
-  positiveNumber('minimum_term');
+
+  /*
+   * validate minimum_term: positiveNumber, zusammen mit cancelation_period
+   * validate cancelation_period: positiveNumber, zusammen mit minimum_term
+   * granted_until: datum, nicht zusammen mit minimum_term, nicht zusammen mit cancelation_period
+   * !cancelation_period: one_of
+   */
+  positiveNumber('minimum_term', {optional: true});
+  positiveNumber('cancelation_period', {optional: true});
+
+  Loan.validate('minimum_term', function (err) {
+    if (!!this.minimum_term !== !!this.cancelation_period) {
+      err();
+    }
+  }, {message: 'validate.together_with_cancelation_period'});
   Loan.validate('cancelation_period', function (err) {
     if (this.cancelation_period && this.granted_until) {
       err();
@@ -27,7 +45,6 @@ module.exports = function (compound, Loan) {
       err();
     }
   }, {message: 'validate.one_of_and_granted_until'});
-  Loan.validate('cancelation_period', validateNumber('cancelation_period'), {message: 'validate.number'});
   Loan.validatesFormatOf('granted_until', {with: /^\d{4}-\d{2}-\d{2}$/, message: 'validate.date', allowBlank: true});
 
   Loan.validate('rate_of_interest', validateNumber('rate_of_interest'), {message: 'validate.number'});

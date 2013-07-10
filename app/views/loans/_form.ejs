@@ -27,20 +27,23 @@
      <%- inputDesc("interest_yearly_to") %>
    </div>
 </div>
+<p>Verträge haben entweder eine Mindestlaufzeit und eine Kündigungsfrist oder sind bis zu einem festgelegten Datum gewährt.</p>
 <div class="control-group">
-   <%- form.label("minimum_term", false, {class: "control-label mandatory"}) %>
+   <%- form.label("minimum_term", false, {class: "control-label"}) %>
    <div class="controls">
        <%- form.input("minimum_term") %>
        <%- inputDesc("timespans") %>
    </div>
 </div>
-<p>Verträge haben entweder eine Kündigungsfrist oder sind bis zu einem festgelegten Datum gewährt. Bitte nicht beide Felder ausfüllen!</p>
 <div class="control-group">
    <%- form.label("cancelation_period", false, {class: "control-label"}) %>
    <div class="controls">
        <%- form.input("cancelation_period") %>
        <%- inputDesc("timespans") %>
    </div>
+</div>
+<div class="control-group">
+<%- t('loans.or') %>
 </div>
 <div class="control-group">
    <%- form.label("granted_until", false, {class: "control-label"}) %>
