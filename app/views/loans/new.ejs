@@ -2,7 +2,7 @@
 <%- form.begin() %>
 <%- include _form %>
 <div class="form-actions">
-    <%- form.submit('<i class="icon-ok icon-white"></i> ' + t('loans.create'), {class: 'btn btn-primary'}) %> or
+    <%- form.submit('<i class="icon-ok icon-white"></i> ' + t('loans.create'), {class: 'btn btn-primary'}) %> <%- t('loans.or') %>
     <%- linkTo(t('cancel'), pathTo.loans(), {class: 'btn'}) %>
 </div>
 <%- form.end() %>
