@@ -12,28 +12,34 @@
 \usepackage{eurosym}
 
 % Need more space
-\usepackage[top=2cm, left=2.8cm, right=2.8cm, bottom=3.6cm]{geometry}
+\usepackage[top=2cm, left=3.5cm, right=3.5cm, bottom=3.6cm]{geometry}
 
 % Header and footer
 \usepackage{fancyhdr}
 \setlength{\footskip}{35pt}
-\fancyhfoffset{0.6cm}
+\fancyhfoffset{0.7cm}
 \renewcommand{\headrulewidth}{0.4pt}
 \renewcommand{\footrulewidth}{0.4pt}
 \pagestyle{fancy} {
   \fancyhead[L]{Kreditvertrag Nr. <<contract.nr>>}
   \fancyhead[R]{Seite \thepage\ von 2}
-  \fancyfoot[L]{\small Hauswärts GmbH \\
-  Kto.-Nr.: 1020153845 \\
-  BLZ: 120 300 00 \\
-  Deutsche Kreditbank AG}
-  \fancyfoot[C]{\small Geschäftsführung: \\
-  Franziska Heine, Julian Irlenkäuser \\
-Amtsgericht Charlottenburg \\
-HRB 150913 B}
-  \fancyfoot[R]{\small Hauswärts GmbH \\
-  Marchlewskistr. 101 \\
-  10243 Berlin
+  \fancyfoot[L]{\footnotesize
+    Kto.-Nr.: 1020153845 \\
+    BLZ: 120 300 00 \\
+    Deutsche Kreditbank AG \\
+    IBAN: DE40 1203 0000 1020 1538 45 \\
+    BIC: BYLADEM1001
+  }
+  \fancyfoot[R]{\footnotesize
+    Geschäftsführung: \\
+    Franziska Heine, Julian Irlenkäuser \\
+    Amtsgericht Charlottenburg \\
+    HRB 150913 B
+  }
+  \fancyfoot[C]{\footnotesize
+    Hauswärts GmbH \\
+    Marchlewskistr. 101 \\
+    10243 Berlin
   }
 }
 \newcommand{\addressStreet}{Burgemeisterstr. 17/18}
@@ -106,23 +112,23 @@ Sollte der Kauf des Hauses \addressWithZIP\ durch die <<debtor.name>> nicht zust
 
 % Hier kommen die Unterschriten hin
 \vspace{1,5 cm}
-\begin{tabular}{p{7cm}p{.5cm}l}
+\begin{tabular}{p{6cm}}
 \dotfill \\
 Ort, Datum
 \end{tabular}%
 \hfill
-\begin{tabular}{p{7cm}p{.5cm}l}
+\begin{tabular}{p{6cm}}
 \dotfill \\
 Ort, Datum
 \end{tabular}%
 
 \vspace{1,5 cm}
-\begin{tabular}{p{7cm}p{.5cm}l}
+\begin{tabular}{p{6cm}}
 \dotfill \\
 Unterschrift Darlehensgeber/in
 \end{tabular}%
 \hfill
-\begin{tabular}{p{7cm}p{.5cm}l}
+\begin{tabular}{p{6cm}}
 \dotfill \\
 Unterschrift Darlehensnehmerin
 \end{tabular}%
