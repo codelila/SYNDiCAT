@@ -7,16 +7,17 @@
   , "ejs-ext": "latest"
   , "express": "~3.x"
   , "compound": ">= 1.1.0"
-  , "jugglingdb": ">= 0.1.0"
   , "coffee-script": ">= 1.1.1"
   , "stylus": "latest"
   , "seedjs": "latest"
   , "co-assets-compiler": "*"
-  , "jugglingdb-sqlite3": ""
   , "connect-roles": "~2.1"
   , "node-pdf": ""
   , "in-words": ""
   , "moment": ""
+  , "bookshelf": ""
+  , "sqlite3": ""
+  , "tv4": ""
   },
   "devDependencies":
   { "nodeunit": "*"
@@ -28,6 +29,6 @@
   , "co-generators": "*"
   }
 , "scripts":
-  { "test": "./node_modules/.bin/mocha --include test/init.js test/*/*.test.js"
+  { "test": "./node_modules/.bin/mocha --require test/init.js --bail -R spec test/*/*.test.js"
   }
 }

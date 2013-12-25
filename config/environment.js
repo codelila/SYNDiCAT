@@ -5,7 +5,7 @@ module.exports = function (compound) {
 
     app.configure(function(){
         app.use(function (req, res, next) {
-          req.isAuthenticated = !!req.headers.remote_user;
+          // FIXME: How to inject this for tests?
           if (req.isAuthenticated) {
             req.user = {
               id: req.headers.remote_user,

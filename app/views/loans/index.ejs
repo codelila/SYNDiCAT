@@ -7,10 +7,10 @@
 <div class="row">
     <div class="span12">
 <h2><%= t('loans.open') %></h2>
-<% var _loans = loans.filter(function (loan) {return loan.loan_state === null}); %>
+<% var _loans = loans.filter(function (loan) {return loan.attributes.loan_state === null}); %>
 <%- include _table %>
 <h2><%= t('loans.current') %></h2>
-<% _loans = loans.filter(function (loan) {return loan.loan_state === 'loaned'}); %>
+<% _loans = loans.filter(function (loan) {return loan.attributes.loan_state === 'loaned'}); %>
 <%- include _table %>
     </div>
 </div>
