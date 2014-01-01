@@ -17,10 +17,7 @@ action('new', function () {
 
 action(function create() {
     var data = Loan.fromStringHash(req.body.Loan);
-    if (Object.prototype.hasOwnProperty.call(data.attributes, 'rate_of_interest')) {
-      data.set('rate_of_interest', data.attributes.rate_of_interest.replace(/,/g, '.'));
-    }
-    data.setCurUser(req.user.id || 'unknown user');
+    data.setCurUser(req.user || {id: 'unknown user'});
 
     data.save().exec(function (err, loan) {
         respondTo(function (format) {
@@ -49,53 +46,34 @@ action(function create() {
 });
 
 action(function index() {
-    this.title = t('loans.index');
-    Bookshelf.Collection.extend({model: Loan})
-        .forge()
-        .fetch()
-        .exec(function (err, loans) {
-        loans = loans.models;
-        switch (params.format) {
-            case "json":
-                send({code: 200, data: loans});
-                break;
-            default:
-                render({
-                    loans: loans
-                });
-        }
-    });
+  this.title = t('loans.index');
+  Bookshelf.Collection.extend({model: Loan}).forge().fetch().then(function (loans) {
+    loans = loans.models;
+    switch (params.format) {
+      case "json":
+        send({code: 200, data: loans});
+        break;
+      default:
+        render({loans: loans});
+    }
+  });
 });
 
 action(function show() {
-    this.title = t(['loans.details', this.loan.id]);
-    switch(params.format) {
-        case "json":
-            send({code: 200, data: this.loan.attributes});
-            break;
-        default:
-            render();
-    }
+  this.title = t(['loans.details', this.loan.id]);
+  switch(params.format) {
+    case "json":
+      send({code: 200, data: this.loan.attributes});
+      break;
+    default:
+      render();
+  }
 });
 
 action(function put_state() {
     var loan = this.loan;
-    data.setCurUser(req.user.id || 'unknown user');
-    if (this.loan.contract_state === null && body.Loan.contract_state === 'sent_to_loaner') {
-    } else if (this.loan.contract_state === 'sent_to_loaner' && body.Loan.contract_state === 'signature_received' &&
-      req.user.can('receive signed contracts')) {
-    } else if (this.loan.contract_state === 'signature_received' && body.Loan.contract_state === 'signature_sent' &&
-      req.user.can('receive signed contracts')) {
-    } else if (body.Loan.contract_state) {
-      console.log(req.user.id + ' trying to do bad stuff');
-      delete body.Loan.contract_state;
-    }
-    if (this.loan.loan_state === null && body.Loan.loan_state === 'loaned' &&
-      req.user.can('receive loans')) {
-    } else if (body.Loan.loan_state) {
-      console.log(req.user.id + ' trying to do bad stuff');
-      delete body.Loan.loan_state;
-    }
+    data.setCurUser(req.user || {id: 'unknown user'});
+
     this.loan.set(body.Loan, function (err) {
         respondTo(function (format) {
             format.json(function () {

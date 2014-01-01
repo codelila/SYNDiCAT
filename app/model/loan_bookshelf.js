@@ -69,34 +69,18 @@ var schema = {
       type: 'number',
       minimum: 0
     },
-    loaner_name: {
-      type: 'string'
-    },
-    loaner_address: {
-      type: 'string'
-    },
-    loaner_phone: {
-      type: 'string'
-    },
-    loaner_email: {
-      type: 'string'
-    },
-    notes: {
-      type: 'string'
-    },
-    contract_state: {
-      type: 'string'
-    },
-    loan_state: {
-      type: 'string'
-    },
+    loaner_name: { type: 'string' },
+    loaner_address: { type: 'string' },
+    loaner_phone: { type: 'string' },
+    loaner_email: { type: 'string' },
+    notes: { type: 'string' },
+    contract_state: { type: 'string' },
+    loan_state: { type: 'string' },
     date_created: {
       type: 'string',
       format: 'date-time'
     },
-    user_created: {
-      type: 'string'
-    }
+    user_created: { type: 'string' }
   }, anyOf: [
     {
       required: [ 'minimum_term', 'cancelation_period' ],
@@ -157,7 +141,7 @@ var Loan = Bookshelf.Model.extend({
         this.set('date_created', (new Date()).toISOString());
       }
       if (!this.get('user_created')) {
-        this.set('user_created', this._curUser);
+        this.set('user_created', this._curUser.id);
       }
     }, this);
     this.on('updating', this.validateUpdate, this);
@@ -185,14 +169,29 @@ var Loan = Bookshelf.Model.extend({
   validateUpdate: function () {
     var loan = this;
     var updateableKeys = [ 'contract_state', 'loan_state' ];
-    Object.keys(schema.properties).forEach(function (key) {
-      if (loan.attributes[key] !== loan._previousAttributes[key]) {
+
+    if (!this._previousAttributes.contract_state && this.changed.contract_state === 'sent_to_loaner') {
+    } else if (this._previousAttributes.contract_state === 'sent_to_loaner' && this.changed.contract_state === 'signature_received' &&
+      this._curUser.can('receive signed contracts')) {
+    } else if (this._previousAttributes.contract_state === 'signature_received' && this.changed.contract_state === 'signature_sent' &&
+      this._curUser.can('receive signed contracts')) {
+    } else if (this.changed.contract_state) {
+      throw new Error('You are trying to do bad stuff');
+    }
+    if (!this._previousAttributes.loan_state && this.changed.loan_state === 'loaned' &&
+      this._curUser.can('receive loans')) {
+    } else if (this.changed.loan_state) {
+      throw new Error('You are trying to do bad stuff');
+    }
+
+    Object.keys(loan.changed).forEach(function (key) {
+      if (loan.changed[key] !== loan._previousAttributes[key]) {
         if (updateableKeys.indexOf(key) === -1) {
           throw new Error('Not allowed to update ' + key);
         } else {
           var skey = (key.substr(0, key.indexOf('_'))) + '_' + loan.get(key);
           loan.set('date_' + skey, (new Date()).toISOString());
-          loan.set('user_' + skey, loan._curUser);
+          loan.set('user_' + skey, loan._curUser.id);
         }
       }
     });
@@ -207,6 +206,8 @@ var Loan = Bookshelf.Model.extend({
         var prop = schema.properties[key];
         if (prop.type === 'integer') {
           hash[key] = Number(hash[key]);
+        } else if (prop.type === 'number') {
+          hash[key] = Number(hash[key].replace(/,/g, '.'));
         }
       } else {
         delete hash[key];
