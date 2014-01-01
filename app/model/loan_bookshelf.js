@@ -80,7 +80,32 @@ var schema = {
       type: 'string',
       format: 'date-time'
     },
-    user_created: { type: 'string' }
+    user_created: { type: 'string' },
+    date_contract_sent_to_loaner: {
+      type: 'string',
+      format: 'date-time'
+    },
+    user_contract_sent_to_loaner: { type: 'string' },
+    date_contract_signature_received: {
+      type: 'string',
+      format: 'date-time'
+    },
+    user_contract_signature_received: { type: 'string' },
+    date_contract_signature_sent: {
+      type: 'string',
+      format: 'date-time'
+    },
+    user_contract_signature_sent: { type: 'string' },
+    date_loan_loaned: {
+      type: 'string',
+      format: 'date-time'
+    },
+    user_loan_loaned: { type: 'string' },
+    date_loan_repaid: {
+      type: 'string',
+      format: 'date-time'
+    },
+    user_loan_repaid: { type: 'string' },
   }, anyOf: [
     {
       required: [ 'minimum_term', 'cancelation_period' ],
@@ -98,33 +123,26 @@ var schema = {
       }
     }
   ]
-}
+};
 
 Bookshelf.Knex.Schema.createTable(tableName, function (table) {
-  table.string('user_contract_sent_to_loaner').nullable();
-  table.dateTime('date_contract_sent_to_loaner').nullable();
-  table.string('user_contract_signature_received').nullable();
-  table.dateTime('date_contract_signature_received').nullable();
-  table.string('user_contract_signature_sent').nullable();
-  table.dateTime('date_contract_signature_sent').nullable();
-  table.string('user_loan_loaned').nullable();
-  table.dateTime('date_loan_loaned').nullable();
-  table.string('user_loan_repaid').nullable();
-  table.dateTime('date_loan_repaid').nullable();
-
   table.increments('id');
+
+  var formatBased = {
+    'date-time': 'dateTime'
+  };
 
   var typeOverwrites = {
     rate_of_interest: 'decimal',
     loaner_address: 'text',
-    notes: 'text',
-    date_created: 'dateTime'
+    notes: 'text'
   };
 
   // create fields from schema
   Object.keys(schema.properties).forEach(function (key) {
     var prop = schema.properties[key];
-    var field = table[typeOverwrites[key] || prop.type](key);
+    var method = typeOverwrites[key] || formatBased[prop.format] || prop.type;
+    var field = table[method](key);
     if (!schema.required.indexOf(key)) {
       field.nullable();
     }
