@@ -1,6 +1,5 @@
 var path = require('path');
 var Loan = (require(path.resolve('app/model/loan_bookshelf.js'))(compound.__localeData[compound.app.settings.defaultLocale]));
-var Bookshelf = require('bookshelf');
 require('bookshelf/plugins/exec');
 
 load('application');
@@ -47,7 +46,7 @@ action(function create() {
 
 action(function index() {
   this.title = t('loans.index');
-  Bookshelf.Collection.extend({model: Loan}).forge().fetch().then(function (loans) {
+  (new Loan.Collection()).fetch().then(function (loans) {
     loans = loans.models;
     switch (params.format) {
       case "json":

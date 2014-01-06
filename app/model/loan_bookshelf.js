@@ -237,3 +237,5 @@ var Loan = Bookshelf.Model.extend({
 
 // Necessary for compoundjs compatibility
 Loan.modelName = 'Loan';
+
+Loan.Collection = Bookshelf.Collection.extend({model: Loan});
