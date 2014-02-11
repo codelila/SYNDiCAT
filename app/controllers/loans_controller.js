@@ -119,7 +119,7 @@ action(function contract() {
   var data = {
     debtor: {
       name: 'Hauswärts GmbH',
-      address: 'Marchlewskistr. 101, 10243 Berlin'
+      address: 'Burgemeisterstr. 17--18, 12103 Berlin'
     }, loaner: {
       name: loan.loaner_name,
       address: loan.loaner_address.replace(/\n/g, '\\\\')
