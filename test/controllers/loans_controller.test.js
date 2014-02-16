@@ -68,6 +68,7 @@ describe('LoanController', function() {
     it('should render "new" template on GET /loans/new', function (done) {
         request(app)
         .get('/loans/new')
+        .set('REMOTE_USER', 'remote user')
         .end(function (err, res) {
             res.statusCode.should.equal(200);
             app.didRender(/loans\/new\.ejs$/i).should.be.true;
@@ -82,6 +83,7 @@ describe('LoanController', function() {
     it('should render "index" template on GET /loans', function (done) {
         request(app)
         .get('/loans')
+        .set('REMOTE_USER', 'remote user')
         .end(function (err, res) {
             res.statusCode.should.equal(200);
             app.didRender(/loans\/index\.ejs$/i).should.be.true;
@@ -134,6 +136,7 @@ describe('LoanController', function() {
 
         request(app)
         .get('/loans/42')
+        .set('REMOTE_USER', 'remote user')
         .end(function (err, res) {
             res.statusCode.should.equal(200);
             fetchedId.should.equal('42');
@@ -159,6 +162,7 @@ describe('LoanController', function() {
 
         request(app)
         .post('/loans')
+        .set('REMOTE_USER', 'remote user')
         .send({ "Loan": loan })
         .end(function (err, res) {
             res.statusCode.should.equal(302);
@@ -180,6 +184,7 @@ describe('LoanController', function() {
 
         request(app)
         .post('/loans')
+        .set('REMOTE_USER', 'remote user')
         .send({ "Loan": loan })
         .end(function (err, res) {
             res.statusCode.should.equal(200);
@@ -196,6 +201,7 @@ describe('LoanController', function() {
 
         request(app)
         .post('/loans')
+        .set('REMOTE_USER', 'remote user')
         .send({ "Loan": loan })
         .end(function (err, res) {
             res.statusCode.should.equal(200);
@@ -210,6 +216,7 @@ describe('LoanController', function() {
 
         request(app)
         .post('/loans')
+        .set('REMOTE_USER', 'remote user')
         .send({ "Loan": loan })
         .end(function (err, res) {
             res.statusCode.should.equal(200);
@@ -224,6 +231,7 @@ describe('LoanController', function() {
 
         request(app)
         .post('/loans')
+        .set('REMOTE_USER', 'remote user')
         .send({ "Loan": loan })
         .end(function (err, res) {
             res.statusCode.should.equal(200);
@@ -238,6 +246,7 @@ describe('LoanController', function() {
 
         request(app)
         .post('/loans')
+        .set('REMOTE_USER', 'remote user')
         .send({ "Loan": loan })
         .end(function (err, res) {
             res.statusCode.should.equal(200);
@@ -252,6 +261,7 @@ describe('LoanController', function() {
 
         request(app)
         .post('/loans')
+        .set('REMOTE_USER', 'remote user')
         .send({ "Loan": loan })
         .end(function (err, res) {
             res.statusCode.should.equal(200);
@@ -266,6 +276,7 @@ describe('LoanController', function() {
 
         request(app)
         .post('/loans')
+        .set('REMOTE_USER', 'remote user')
         .send({ "Loan": loan })
         .end(function (err, res) {
             res.statusCode.should.equal(200);
@@ -280,6 +291,7 @@ describe('LoanController', function() {
 
         request(app)
         .post('/loans')
+        .set('REMOTE_USER', 'remote user')
         .send({ "Loan": loan })
         .end(function (err, res) {
             res.statusCode.should.equal(302);
@@ -293,6 +305,7 @@ describe('LoanController', function() {
 
         request(app)
         .post('/loans')
+        .set('REMOTE_USER', 'remote user')
         .send({ "Loan": loan })
         .end(function (err, res) {
             res.statusCode.should.equal(200);
@@ -307,6 +320,7 @@ describe('LoanController', function() {
 
         request(app)
         .post('/loans')
+        .set('REMOTE_USER', 'remote user')
         .send({ "Loan": loan })
         .end(function (err, res) {
             res.statusCode.should.equal(200);

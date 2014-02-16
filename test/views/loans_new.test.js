@@ -16,6 +16,7 @@ describe('Loans View New', function() {
   it('has correctly translated input labels', function (done) {
     request(app)
     .get('/loans/new')
+    .set('REMOTE_USER', 'remote user')
     .expect(/Bankverbindung für jährliche Zinszahlungen/)
     .end(function (err, res) {
       done(err);

@@ -4,15 +4,20 @@ module.exports = function (compound) {
     var app = compound.app;
 
     app.configure(function(){
+        // FIXME: Factor this out or move to passport, e. g.
+        // https://github.com/steve-jansen/passport-reverseproxy
         app.use(function (req, res, next) {
-          // FIXME: How to inject this for tests?
-          if (req.isAuthenticated) {
-            req.user = {
-              id: req.headers.remote_user,
-              name: req.headers.remote_user,
-              isAuthenticated: true
-            };
+          var headerName = 'remote_user';
+          var header = req.headers[headerName];
+          if (!header) {
+            res.send(403);
+            return;
           }
+          req.user = {
+            id: header,
+            name: header,
+            isAuthenticated: true
+          };
           next();
         });
         app.use(require('./authorization'));

@@ -16,7 +16,7 @@ action('new', function () {
 
 action(function create() {
     var data = Loan.fromStringHash(req.body.Loan);
-    data.setCurUser(req.user || {id: 'unknown user'});
+    data.setCurUser(req.user);
 
     data.save().exec(function (err, loan) {
         respondTo(function (format) {
@@ -71,7 +71,7 @@ action(function show() {
 
 action(function put_state() {
     var loan = this.loan;
-    data.setCurUser(req.user || {id: 'unknown user'});
+    data.setCurUser(req.user);
 
     this.loan.set(body.Loan, function (err) {
         respondTo(function (format) {

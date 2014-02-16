@@ -6,4 +6,5 @@ A service for tracking small loans with diverse terms, conditions, cancelation p
 Installation
 ----
 
-Direktkredite needs `xelatex` and a populated `REMOTE_USER`.
+Direktkredite needs `xelatex` in `$PATH` and a populated `REMOTE_USER` set by a reverse proxy
+in front of it.
