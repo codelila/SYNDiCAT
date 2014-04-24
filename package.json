@@ -13,7 +13,7 @@
   , "seedjs": "latest"
   , "co-assets-compiler": "*"
   , "jugglingdb-sqlite3": ""
-  , "connect-roles": ""
+  , "connect-roles": "~2.1"
   , "node-pdf": ""
   , "in-words": ""
   , "moment": ""
