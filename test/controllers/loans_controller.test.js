@@ -128,8 +128,8 @@ describe('LoanController', function() {
             var loan = this;
             fetchedId = loan.id;
             return {
-              exec: function (callback) {
-                callback(null, loan);
+              then: function (callback) {
+                callback(loan);
               }
             }
         });
@@ -343,8 +343,8 @@ describe('LoanController', function() {
             var loan = this;
             fetchedId = loan.id;
             return {
-              exec: function (callback) {
-                callback(null, loan);
+              then: function (callback) {
+                callback(loan);
               }
             }
         });
@@ -376,8 +376,8 @@ describe('LoanController', function() {
             var loan = this;
             fetchedId = loan.id;
             return {
-              exec: function (callback) {
-                callback(null, loan);
+              then: function (callback) {
+                callback(loan);
               }
             }
         });
