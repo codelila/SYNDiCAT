@@ -37,10 +37,10 @@ module.exports = function(locale) {
   return Loan;
 };
 
-Bookshelf.Initialize({
+var bookshelf = Bookshelf.initialize({
   client: 'sqlite',
   connection: {
-    filename : './var/development.sqlite3'
+    filename: './var/development.sqlite3'
   }
 });
 
@@ -125,31 +125,36 @@ var schema = {
   ]
 };
 
-Bookshelf.Knex.Schema.createTable(tableName, function (table) {
-  table.increments('id');
+bookshelf.knex.schema.hasTable(tableName).then(function(exists) {
+  if (exists) {
+    return;
+  }
+  bookshelf.knex.schema.createTable(tableName, function (table) {
+    table.increments('id');
 
-  var formatBased = {
-    'date-time': 'dateTime'
-  };
+    var formatBased = {
+      'date-time': 'dateTime'
+    };
 
-  var typeOverwrites = {
-    rate_of_interest: 'decimal',
-    loaner_address: 'text',
-    notes: 'text'
-  };
+    var typeOverwrites = {
+      rate_of_interest: 'decimal',
+      loaner_address: 'text',
+      notes: 'text'
+    };
 
-  // create fields from schema
-  Object.keys(schema.properties).forEach(function (key) {
-    var prop = schema.properties[key];
-    var method = typeOverwrites[key] || formatBased[prop.format] || prop.type;
-    var field = table[method](key);
-    if (!schema.required.indexOf(key)) {
-      field.nullable();
-    }
-  });
-});
+    // create fields from schema
+    Object.keys(schema.properties).forEach(function (key) {
+      var prop = schema.properties[key];
+      var method = typeOverwrites[key] || formatBased[prop.format] || prop.type;
+      var field = table[method](key);
+      if (!schema.required.indexOf(key)) {
+        field.nullable();
+      }
+    });
+  }).then(console.log, console.log);
+})
 
-var Loan = Bookshelf.Model.extend({
+var Loan = bookshelf.Model.extend({
   tableName: tableName,
   hasTimestamps: false,
   idAttribute: 'id',
@@ -238,4 +243,4 @@ var Loan = Bookshelf.Model.extend({
 // Necessary for compoundjs compatibility
 Loan.modelName = 'Loan';
 
-Loan.Collection = Bookshelf.Collection.extend({model: Loan});
+Loan.Collection = bookshelf.Collection.extend({model: Loan});

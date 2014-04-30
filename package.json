@@ -15,7 +15,7 @@
   , "node-pdf": ""
   , "in-words": ""
   , "moment": ""
-  , "bookshelf": "~0.3.0"
+  , "bookshelf": "0.5.x"
   , "sqlite3": ""
   , "tv4": ""
   },
