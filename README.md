@@ -30,6 +30,9 @@ npm test
 # Start server in ADMIN_PARTY mode
 # You can kill the server anytime with Strg+C
 ADMIN_PARTY=someuser nodejs .
+
+# Or, if you are not running Debian's nodejs
+ADMIN_PARTY=someuser node .
 ```
 
 You should now be able to browse to `http://localhost:3000` and be logged in as `someuser`.
