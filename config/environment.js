@@ -9,6 +9,9 @@ module.exports = function (compound) {
         app.use(function (req, res, next) {
           var headerName = 'remote_user';
           var header = req.headers[headerName];
+          if (!header && process.env.ADMIN_PARTY) {
+            header = String(process.env.ADMIN_PARTY);
+          }
           if (!header) {
             res.send(403);
             return;
@@ -21,7 +24,7 @@ module.exports = function (compound) {
           next();
         });
         app.use(require('./authorization'));
-        //app.use(express.static(app.root + '/public', { maxAge: 86400000 }));
+        app.use(express.static(app.root + '/public', { maxAge: 86400000 }));
         app.set('jsDirectory', '/javascripts/');
         app.set('cssDirectory', '/stylesheets/');
         app.set('cssEngine', 'stylus');
