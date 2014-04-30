@@ -48,7 +48,7 @@ var tableName = 'Loan';
 
 var schema = {
   required: [
-    'value', 'loaner_name', 'loaner_address', 'date_created', 'user_created'
+    'value', 'loaner_name', 'loaner_address', 'date_created', 'user_created', 'rate_of_interest'
   ], properties: {
     value: {
       type: 'integer',
@@ -225,12 +225,16 @@ var Loan = bookshelf.Model.extend({
 }, {
   fromStringHash: function (hash) {
     Object.keys(schema.properties).forEach(function (key) {
-      if (hash[key]) {
+      // FIXME: If this would actually always be a string hash, undefined check would
+      // not be necessary
+      if (typeof hash[key] !== 'undefined' && hash[key] !== '') {
         var prop = schema.properties[key];
         if (prop.type === 'integer') {
           hash[key] = Number(hash[key]);
         } else if (prop.type === 'number') {
-          hash[key] = Number(hash[key].replace(/,/g, '.'));
+          // FIXME: If this would actually always be a string hash, String() conversion
+          // would not be necessary
+          hash[key] = Number(String(hash[key]).replace(/,/g, '.'));
         }
       } else {
         delete hash[key];

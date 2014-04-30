@@ -1,6 +1,7 @@
 var app, compound
 , request = require('supertest')
-, sinon   = require('sinon');
+, sinon   = require('sinon')
+, when = require('when');
 
 var strings = {
   models: {
@@ -32,7 +33,7 @@ var loanStubStringHash = {
   value: '1000',
   cancelation_period: '3',
   minimum_term: '3',
-  rate_of_interest: '',
+  rate_of_interest: '0',
   loaner_name: 'Loaner Name',
   loaner_address: 'Loaner Address',
   contract_state: '',
@@ -124,12 +125,17 @@ describe('LoanController', function() {
         var Loan = app.models.Loan;
 
         var fetchedId = null;
-        var stub = sinon.stub(Loan.prototype, 'fetch', function () {
+        var stub = sinon.stub(Loan.prototype, 'sync', function () {
             var loan = this;
             fetchedId = loan.id;
             return {
-              then: function (callback) {
-                callback(loan);
+              first: function () {
+                var res = LoanStub().attributes;
+                res.date_created = (new Date()).toISOString();
+                return when.resolve([ res ]);
+              },
+              update: function (attrs) {
+                updatedAttrs = attrs;
               }
             }
         });
@@ -141,7 +147,7 @@ describe('LoanController', function() {
             res.statusCode.should.equal(200);
             fetchedId.should.equal('42');
             app.didRender(/loans\/show\.ejs$/i).should.be.true;
-            Loan.prototype.fetch.restore();
+            stub.restore();
 
             done();
         });
@@ -181,6 +187,23 @@ describe('LoanController', function() {
     it('should fail on POST /loans when Loan#create returns an error', function (done) {
         var Loan = app.models.Loan
         , loan = extend({}, loanStubStringHash, {value: ''});
+
+        request(app)
+        .post('/loans')
+        .set('REMOTE_USER', 'remote user')
+        .send({ "Loan": loan })
+        .end(function (err, res) {
+            res.statusCode.should.equal(200);
+
+            app.didFlash('error').should.be.true;
+
+            done();
+        });
+    });
+
+    it('should fail on POST /loans when no rate of interest given', function (done) {
+        var Loan = app.models.Loan
+        , loan = extend({}, loanStubStringHash, {rate_of_interest: ''});
 
         request(app)
         .post('/loans')
@@ -409,12 +432,18 @@ describe('LoanController', function() {
         var Loan = app.models.Loan;
 
         var fetchedId = null;
-        var stub = sinon.stub(Loan.prototype, 'fetch', function () {
+        var updatedAttrs = null;
+        var stub = sinon.stub(Loan.prototype, 'sync', function () {
             var loan = this;
             fetchedId = loan.id;
             return {
-              then: function (callback) {
-                callback(loan);
+              first: function () {
+                var res = LoanStub().attributes;
+                res.date_created = (new Date()).toISOString();
+                return when.resolve([ res ]);
+              },
+              update: function (attrs) {
+                updatedAttrs = attrs;
               }
             }
         });
@@ -427,11 +456,47 @@ describe('LoanController', function() {
             res.statusCode.should.equal(302);
             fetchedId.should.equal('42');
             res.header.location.should.equal('/loans/42');
-            Loan.prototype.fetch.restore();
+            updatedAttrs.contract_state.should.equal('sent_to_loaner');
+            updatedAttrs.date_contract_sent_to_loaner.should.match(/^\d{4}-\d{2}-\d{2}/);
+            updatedAttrs.user_contract_sent_to_loaner.should.equal('remote user');
 
-            // FIXME: Check setting
-
+            stub.restore();
             done();
         });
     });
+
+    // FIXME
+    it('should respond with error code on invalid PUT /loans/:id/state', false && function (done) {
+        var Loan = app.models.Loan;
+
+        var fetchedId = null;
+        var stub = sinon.stub(Loan.prototype, 'sync', function () {
+            var loan = this;
+            fetchedId = loan.id;
+            return {
+              first: function () {
+                var res = LoanStub().attributes;
+                res.date_created = (new Date()).toISOString();
+                return when.resolve([ res ]);
+              },
+              update: function (attrs) {
+                updatedAttrs = attrs;
+              }
+            }
+        });
+
+        request(app)
+        .put('/loans/42/state')
+        .set('REMOTE_USER', 'remote user')
+        .send('Loan[contract_]=abc')
+        .end(function (err, res) {
+            res.statusCode.should.not.equal(302);
+            res.statusCode.should.not.equal(200);
+            fetchedId.should.equal('42');
+
+            stub.restore();
+            done();
+        });
+    });
+
 });
