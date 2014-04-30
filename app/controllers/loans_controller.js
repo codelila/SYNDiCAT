@@ -71,23 +71,26 @@ action(function show() {
 
 action(function put_state() {
     var loan = this.loan;
-    data.setCurUser(req.user);
+    loan.setCurUser(req.user);
 
-    this.loan.set(body.Loan, function (err) {
+    this.loan.set(body.Loan);
+    this.loan.save().then(function () {
         respondTo(function (format) {
             format.json(function () {
-                if (err) {
-                    send({code: 500, error: loan && loan.errors || err});
-                } else {
-                    send({code: 200, data: loan.attributes});
-                }
+                send({code: 200, data: loan.attributes});
             });
             format.html(function () {
-                if (!err) {
-                    flash('info', 'Loan updated');
-                } else {
-                    flash('error', 'Loan can not be updated');
-                }
+                flash('info', 'Loan updated');
+                redirect(path_to.loan(loan));
+            });
+        });
+    }, function (err) {
+        respondTo(function (format) {
+            format.json(function () {
+                send({code: 500, error: loan && loan.errors || err});
+            });
+            format.html(function () {
+                flash('error', 'Loan can not be updated');
                 redirect(path_to.loan(loan));
             });
         });

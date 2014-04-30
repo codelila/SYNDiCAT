@@ -404,4 +404,34 @@ describe('LoanController', function() {
      * -- TODO: IMPLEMENT FAILURE --
      */
     it('should not delete a Loan on DELETE /loans/:id if it fails');
+
+    it('should update state on PUT /loans/:id/state', function (done) {
+        var Loan = app.models.Loan;
+
+        var fetchedId = null;
+        var stub = sinon.stub(Loan.prototype, 'fetch', function () {
+            var loan = this;
+            fetchedId = loan.id;
+            return {
+              then: function (callback) {
+                callback(loan);
+              }
+            }
+        });
+
+        request(app)
+        .put('/loans/42/state')
+        .set('REMOTE_USER', 'remote user')
+        .send('Loan[contract_state]=sent_to_loaner')
+        .end(function (err, res) {
+            res.statusCode.should.equal(302);
+            fetchedId.should.equal('42');
+            res.header.location.should.equal('/loans/42');
+            Loan.prototype.fetch.restore();
+
+            // FIXME: Check setting
+
+            done();
+        });
+    });
 });
