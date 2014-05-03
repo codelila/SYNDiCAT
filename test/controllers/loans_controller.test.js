@@ -459,6 +459,7 @@ describe('LoanController', function() {
             updatedAttrs.contract_state.should.equal('sent_to_loaner');
             updatedAttrs.date_contract_sent_to_loaner.should.match(/^\d{4}-\d{2}-\d{2}/);
             updatedAttrs.user_contract_sent_to_loaner.should.equal('remote user');
+            app.didFlash('error').should.be.false;
 
             stub.restore();
             done();
@@ -493,6 +494,7 @@ describe('LoanController', function() {
             res.statusCode.should.not.equal(302);
             res.statusCode.should.not.equal(200);
             fetchedId.should.equal('42');
+            app.didFlash('error').should.be.true;
 
             stub.restore();
             done();
