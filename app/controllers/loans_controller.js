@@ -123,7 +123,7 @@ action(function contract() {
       valueInWords: inWords(loan.value),
       interest: loan.rate_of_interest,
       minimumTerm: loan.minimum_term,
-      yearlyInterestTo: loan.interest_yearly_to.replace(/\n/g, '\\\\'),
+      yearlyInterestTo: (loan.interest_yearly_to || '').replace(/\n/g, '\\\\'),
       grantedUntil: grantedUntil && grantedUntil.lang('de').format('LL'),
       cancelationPeriod: loan.cancelation_period
     }
