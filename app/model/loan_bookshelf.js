@@ -221,6 +221,18 @@ var Loan = bookshelf.Model.extend({
   },
   setCurUser: function (user) {
     this._curUser = user;
+  },
+  toCompoundViewObject: function () {
+    var attrs = this.attributes, res = {
+      id: this.id,
+      constructor: {
+        modelName: 'Loan'
+      }
+    };
+    Object.keys(schema.properties).forEach(function (key) {
+      res[key] = attrs[key] === null ? '' : attrs[key];
+    });
+    return res;
   }
 }, {
   fromStringHash: function (hash) {
@@ -243,8 +255,5 @@ var Loan = bookshelf.Model.extend({
     return new Loan(hash);
   }
 });
-
-// Necessary for compoundjs compatibility
-Loan.modelName = 'Loan';
 
 Loan.Collection = bookshelf.Collection.extend({model: Loan});

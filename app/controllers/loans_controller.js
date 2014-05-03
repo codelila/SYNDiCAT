@@ -9,7 +9,7 @@ before(loadLoan, {
 
 action('new', function () {
     this.title = t('loans.new');
-    this.loan = new Loan;
+    this.loan = new Loan().toCompoundViewObject();
     render();
 });
 
@@ -36,7 +36,7 @@ action(function create() {
                 flash('error', t('loans.cannot_create'));
                 flash('error', err.message ? (t(err.message) || err.message) : err);
                 render('new', {
-                    loan: data,
+                    loan: data.toCompoundViewObject(),
                     title: t('loans.new')
                 });
             });
@@ -60,6 +60,7 @@ action(function index() {
 
 action(function show() {
   this.title = t(['loans.details', this.loan.id]);
+  this.loan = this.loan.toCompoundViewObject();
   switch(params.format) {
     case "json":
       send({code: 200, data: this.loan.attributes});
@@ -91,7 +92,11 @@ action(function put_state() {
             });
             format.html(function () {
                 flash('error', 'Loan can not be updated');
-                redirect(path_to.loan(loan));
+                flash('error', err.message ? (t(err.message) || err.message) : err);
+                render('show', {
+                    loan: loan.toCompoundViewObject(),
+                    title: t(['loans.details', loan.id])
+                });
             });
         });
     });
