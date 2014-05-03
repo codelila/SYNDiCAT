@@ -174,6 +174,15 @@ var Loan = bookshelf.Model.extend({
     this.on('saving', this.validate, this);
   },
   validate: function () {
+    var attrs = this.attributes;
+
+    // tv4 wrongly tries to validate null values
+    Object.keys(attrs).forEach(function (key) {
+      if (attrs[key] === null) {
+        delete attrs[key];
+      }
+    });
+
     var errors = tv4.validateResult(this.attributes, schema);
     if (!errors.valid) {
       if (errors.error.schemaPath === '/anyOf') {
