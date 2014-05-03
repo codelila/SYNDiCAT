@@ -65,6 +65,9 @@ var schema = {
       type: 'string',
       format: 'date'
     },
+    interest_yearly_to: {
+      type: 'text',
+    },
     rate_of_interest: {
       type: 'number',
       minimum: 0
