@@ -1,7 +1,9 @@
+'use strict';
+
 require('should');
 
 global.getApp = function(done) {
-    var app = require('compound').createServer()
+    var app = require('compound').createServer();
 
     app.renderedViews = [];
     app.flashedMessages = {};
@@ -21,7 +23,7 @@ global.getApp = function(done) {
         }
 
         return app._render.apply(this, arguments);
-    }
+    };
 
     // Check whether a view has been rendered
     app.didRender = function (viewRegex) {
@@ -32,12 +34,12 @@ global.getApp = function(done) {
             }
         });
         return didRender;
-    }
+    };
 
     // Check whether a flash has been called
     app.didFlash = function (type) {
         return !!(app.flashedMessages[type]);
-    }
+    };
 
     return app;
 };

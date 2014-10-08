@@ -1,3 +1,5 @@
+'use strict';
+
 var Bookshelf = require('bookshelf');
 var tv4 = require('tv4');
 
@@ -155,7 +157,7 @@ bookshelf.knex.schema.hasTable(tableName).then(function(exists) {
       }
     });
   }).then(console.log, console.log);
-})
+});
 
 var Loan = bookshelf.Model.extend({
   tableName: tableName,

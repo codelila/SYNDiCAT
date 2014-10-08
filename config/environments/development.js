@@ -1,3 +1,5 @@
+'use strict';
+
 var express = require('express');
 
 module.exports = function (compound) {
@@ -8,6 +10,9 @@ module.exports = function (compound) {
         app.enable('env info');
         app.enable('watch');
         app.enable('force assets compilation');
-        app.use(require('express').errorHandler({ dumpExceptions: true, showStack: true }));
+        app.use(require('express').errorHandler({
+          dumpExceptions: true,
+          showStack: true
+        }));
     });
 };

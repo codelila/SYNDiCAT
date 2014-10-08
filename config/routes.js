@@ -1,3 +1,5 @@
+'use strict';
+
 exports.routes = function (map) {
     map.resources('loans', {only: ['new', 'create', 'index', 'show']}, function (loan) {
       loan.put('state', 'loans#put_state');

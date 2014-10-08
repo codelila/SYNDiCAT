@@ -1,3 +1,5 @@
+'use strict';
+
 var app, compound
 , request = require('supertest')
 , sinon   = require('sinon')

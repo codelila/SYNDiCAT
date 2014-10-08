@@ -1,3 +1,6 @@
+'use strict';
+
+var assert = require('assert');
 var sinon = require('sinon');
 
 var strings = {
@@ -16,8 +19,10 @@ var strings = {
 var Loan = require('../../app/model/loan_bookshelf.js')(strings);
 
 function loanStub() {
-  var loan = new Loan({value: 10, loaner_name: 'Ich', loaner_address: 'Here', rate_of_interest: 0,
-    granted_until: '2013-01-01', user_created: 'Me', date_created: (new Date()).toISOString()});
+  var loan = new Loan({value: 10, loaner_name: 'Ich', loaner_address: 'Here',
+    rate_of_interest: 0, granted_until: '2013-01-01', user_created: 'Me',
+    date_created: (new Date()).toISOString()
+  });
   loan.setCurUser({id: 'Me', can: function () { return true; }});
   return loan;
 }
@@ -28,7 +33,8 @@ describe('LoanModel', function () {
     loan.save().then(function (l) {
       return l.set('value', 10000).save();
     }).then(function (m) {
-      done((m.get('value') === 10) ? null : 'Should not have saved successfully');
+      assert.ok(m.get('value') === 10, 'Should not have saved successfully');
+      done();
     }, function (err) {
       err.message.should.equal('Not allowed to update value');
       done();

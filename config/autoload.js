@@ -1,3 +1,5 @@
+'use strict';
+
 module.exports = function (compound) {
   var defaultModules = [
       'co-assets-compiler'
@@ -8,13 +10,13 @@ module.exports = function (compound) {
       'ejs-ext',
       'seedjs',
       'co-generators'
-    ]
+    ];
   }
 
   if (typeof window === 'undefined') {
     return defaultModules.concat(developmentModules).map(require);
   } else {
-    return []
+    return [];
   }
 };
 

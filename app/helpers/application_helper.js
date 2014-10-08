@@ -1,3 +1,5 @@
+'use strict';
+
 exports.inputDesc = function (id) {
   return '<small>' + this.viewContext.icon('info-sign') + this.viewContext.t('models.Loan.descriptions.' + id) + '</small>';
 };

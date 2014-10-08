@@ -1,3 +1,5 @@
+'use strict';
+
 var request = require('supertest');
 var sinon = require('sinon');
 var Loan = require('../../app/model/loan_bookshelf.js');

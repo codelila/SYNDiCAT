@@ -1,3 +1,5 @@
+'use strict';
+
 var user = require('connect-roles');
 
 var groups = {
@@ -21,7 +23,7 @@ function groupBased(groupName) {
       return true;
     }
   };
-};
+}
 
 groupPermissions.forEach(function (o) {
   user.use(o.action, groupBased(o.group));

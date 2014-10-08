@@ -20,7 +20,8 @@
   , "tv4": ""
   },
   "devDependencies":
-  { "nodeunit": "*"
+  { "jshint": ""
+  , "nodeunit": "*"
   , "sinon": "*"
   , "supertest": ">= 0"
   , "mocha": ">= 0"
@@ -30,6 +31,7 @@
   , "co-generators": "*"
   }
 , "scripts":
-  { "test": "./node_modules/.bin/mocha --require test/init.js --bail -R spec test/*/*.test.js"
+  { "test": "./node_modules/.bin/mocha --require test/init.js --bail -R spec test/*/*.test.js",
+    "hint": "jshint app/ config/ test/ server.js"
   }
 }

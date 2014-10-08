@@ -1,3 +1,5 @@
+'use strict';
+
 var path = require('path');
 var Loan = (require(path.resolve('app/model/loan_bookshelf.js'))(compound.__localeData[compound.app.settings.defaultLocale]));
 
