@@ -1,6 +1,7 @@
 'use strict';
 
 var app, compound
+, assert = require('assert')
 , request = require('supertest')
 , sinon   = require('sinon')
 , when = require('when');
@@ -501,6 +502,36 @@ describe('LoanController', function() {
             stub.restore();
             done();
         });
+    });
+
+    it('renders PDF on GET /loans/:id/contract', function (done) {
+        var Loan = app.models.Loan;
+
+        var fetchedId = null;
+        var stub = sinon.stub(Loan.prototype, 'sync', function () {
+            var loan = this;
+            fetchedId = loan.id;
+            return {
+              first: function () {
+                var res = LoanStub().attributes;
+                res.date_created = (new Date()).toISOString();
+                return when.resolve([ res ]);
+              },
+              update: function (attrs) {
+                updatedAttrs = attrs;
+              }
+            }
+        });
+
+        request(app)
+        .get('/loans/42/contract')
+        .set('REMOTE_USER', 'remote user')
+        .end(function (err, res) {
+            assert(res.text.match(/%PDF-1\.5/));
+            stub.restore();
+            done();
+        });
+
     });
 
 });
