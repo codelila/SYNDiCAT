@@ -124,10 +124,7 @@ action(function contract() {
   var loanId = this.loan.attributes.id;
 
   contractGenerator.render({
-    debtor: {
-      name: 'Hauswärts GmbH',
-      address: 'Burgemeisterstr. 17--18, 12103 Berlin'
-    },
+    debtor: require(path.resolve('config/debtor')),
     loan: this.loan.attributes
   }).then(function (rs) {
     res.attachment('kreditvertrag-' + loanId + '.pdf');
