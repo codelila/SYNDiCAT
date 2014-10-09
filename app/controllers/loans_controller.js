@@ -1,6 +1,8 @@
 'use strict';
 
 var path = require('path');
+var Promise = require('es6-promise').Promise;
+
 var Loan = (require(path.resolve('app/model/loan_bookshelf.js'))(compound.__localeData[compound.app.settings.defaultLocale]));
 
 load('application');
@@ -104,40 +106,34 @@ action(function put_state() {
     });
 });
 
-var inWords = require('in-words').de;
 var pdf = require('node-pdf');
-var moment = require('moment');
+var ContractGenerator = require(path.resolve('core/ContractGenerator'));
+var contractGenerator = new ContractGenerator(function (data) {
+  return new Promise(function (resolve, reject) {
+    pdf.render(app.root + '/config/contract-template.tex', data, function (err,rs) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(rs);
+      }
+    });
+  });
+});
 
 action(function contract() {
-  var loan = this.loan.attributes;
+  var loanId = this.loan.attributes.id;
 
-  var grantedUntil = moment(loan.granted_until, 'YYYY-MM-DD');
-  var data = {
+  contractGenerator.render({
     debtor: {
       name: 'Hauswärts GmbH',
       address: 'Burgemeisterstr. 17--18, 12103 Berlin'
-    }, loaner: {
-      name: loan.loaner_name,
-      address: loan.loaner_address.replace(/\n/g, '\\\\')
-    }, contract: {
-      nr: loan.id,
-      value: loan.value,
-      valueInWords: inWords(loan.value),
-      interest: loan.rate_of_interest,
-      minimumTerm: loan.minimum_term,
-      yearlyInterestTo: (loan.interest_yearly_to || '').replace(/\n/g, '\\\\'),
-      grantedUntil: grantedUntil && grantedUntil.lang('de').format('LL'),
-      cancelationPeriod: loan.cancelation_period
-    }
-  };
-
-  pdf.render(app.root + '/config/contract-template.tex', data, function (err,rs) {
-    if (err) {
-      console.log(err);
-    } else {
-      res.attachment('kreditvertrag-' + loan.id + '.pdf');
-      rs.pipe(res);
-    }
+    },
+    loan: this.loan.attributes
+  }).then(function (rs) {
+    res.attachment('kreditvertrag-' + loanId + '.pdf');
+    rs.pipe(res);
+  }).catch(function (err) {
+    console.log(err);
   });
 });
 

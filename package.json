@@ -5,6 +5,7 @@
 , "dependencies":
   { "ejs": "*"
   , "ejs-ext": "latest"
+  , "es6-promise": ""
   , "express": "~3.x"
   , "compound": ">= 1.1.0"
   , "coffee-script": ">= 1.1.1"
