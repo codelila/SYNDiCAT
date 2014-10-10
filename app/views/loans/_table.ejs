@@ -10,10 +10,10 @@
         <% _loans.forEach(function (loan) { %>
         <tr>
             <td><strong><%- link_to('#' + loan.id, pathTo.loan(loan)) %></strong></td>
-            <td><%- t(['loans.in_currency', loan.value, '€']) %></td>
+            <td><%- t(['loans.in_currency', loan.attributes.value, '€']) %></td>
         </tr>
         <% }); %>
-        <tr><td class="sum"><%= t('loans.sum') %></td><td><%- t(['loans.in_currency', _loans.reduce(function(sum, loan) { return sum += loan.value; }, 0), '€']) %></td>
+        <tr><td class="sum"><%= t('loans.sum') %></td><td><%- t(['loans.in_currency', _loans.reduce(function(sum, loan) { return sum += loan.attributes.value; }, 0), '€']) %></td>
         </tr>
     </tbody>
 </table>

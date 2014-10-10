@@ -1,3 +1,6 @@
+var path = require('path');
+var Loan = (require(path.resolve('app/model/loan_bookshelf.js'))(compound.__localeData[compound.app.settings.defaultLocale]));
+
 load('application');
 
 before(loadLoan, {
@@ -6,103 +9,94 @@ before(loadLoan, {
 
 action('new', function () {
     this.title = t('loans.new');
-    this.loan = new Loan;
+    this.loan = new Loan().toCompoundViewObject();
     render();
 });
 
 action(function create() {
-    var data = req.body.Loan;
-    if (data.hasOwnProperty('rate_of_interest')) {
-      data.rate_of_interest = data.rate_of_interest.replace(/,/g, '.');
-    }
-    data.date_created = Date.now();
-    data.user_created = req.user.id;
+    var data = Loan.fromStringHash(req.body.Loan);
+    data.setCurUser(req.user);
 
-    Loan.create(data, function (err, loan) {
+    data.save().then(function (loan) {
         respondTo(function (format) {
             format.json(function () {
-                if (err) {
-                    send({code: 500, error: loan && loan.errors || err});
-                } else {
-                    send({code: 200, data: loan.toObject()});
-                }
+                redirect(path_to.loans);
             });
             format.html(function () {
-                if (err) {
-                    flash('error', t('loans.cannot_create'));
-                    render('new', {
-                        loan: loan,
-                        title: t('loans.new')
-                    });
-                } else {
-                    flash('info', t('loans.created'));
-                    redirect(path_to.loans);
-                }
+                flash('info', t('loans.created'));
+                redirect(path_to.loans);
+            });
+        });
+    }, function (err) {
+        respondTo(function (format) {
+            format.json(function () {
+                send({code: 500, error: err});
+            });
+            format.html(function () {
+                flash('error', t('loans.cannot_create'));
+                flash('error', err.message ? (t(err.message) || err.message) : err);
+                render('new', {
+                    loan: data.toCompoundViewObject(),
+                    title: t('loans.new')
+                });
             });
         });
     });
 });
 
 action(function index() {
-    this.title = t('loans.index');
-    Loan.all(function (err, loans) {
-        switch (params.format) {
-            case "json":
-                send({code: 200, data: loans});
-                break;
-            default:
-                render({
-                    loans: loans
-                });
-        }
-    });
+  this.title = t('loans.index');
+  (new Loan.Collection()).fetch().then(function (loans) {
+    loans = loans.models;
+    switch (params.format) {
+      case "json":
+        send({code: 200, data: loans});
+        break;
+      default:
+        render({loans: loans});
+    }
+  });
 });
 
 action(function show() {
-    this.title = t(['loans.details', this.loan.id]);
-    switch(params.format) {
-        case "json":
-            send({code: 200, data: this.loan});
-            break;
-        default:
-            render();
-    }
+  this.title = t(['loans.details', this.loan.id]);
+  this.loan = this.loan.toCompoundViewObject();
+  switch(params.format) {
+    case "json":
+      send({code: 200, data: this.loan.attributes});
+      break;
+    default:
+      render();
+  }
 });
 
 action(function put_state() {
     var loan = this.loan;
-    body.Loan.updating_user = req.user.id;
-    if (this.loan.contract_state === null && body.Loan.contract_state === 'sent_to_loaner') {
-    } else if (this.loan.contract_state === 'sent_to_loaner' && body.Loan.contract_state === 'signature_received' &&
-      req.user.can('receive signed contracts')) {
-    } else if (this.loan.contract_state === 'signature_received' && body.Loan.contract_state === 'signature_sent' &&
-      req.user.can('receive signed contracts')) {
-    } else if (body.Loan.contract_state) {
-      console.log(req.user.id + ' trying to do bad stuff');
-      delete body.Loan.contract_state;
-    }
-    if (this.loan.loan_state === null && body.Loan.loan_state === 'loaned' &&
-      req.user.can('receive loans')) {
-    } else if (body.Loan.loan_state) {
-      console.log(req.user.id + ' trying to do bad stuff');
-      delete body.Loan.loan_state;
-    }
-    this.loan.updateAttributes(body.Loan, function (err) {
+    loan.setCurUser(req.user);
+
+    this.loan.set(body.Loan);
+    this.loan.save().then(function () {
         respondTo(function (format) {
             format.json(function () {
-                if (err) {
-                    send({code: 500, error: loan && loan.errors || err});
-                } else {
-                    send({code: 200, data: loan});
-                }
+                send({code: 200, data: loan.attributes});
             });
             format.html(function () {
-                if (!err) {
-                    flash('info', 'Loan updated');
-                } else {
-                    flash('error', 'Loan can not be updated');
-                }
+                flash('info', 'Loan updated');
                 redirect(path_to.loan(loan));
+            });
+        });
+    }, function (err) {
+        respondTo(function (format) {
+            format.json(function () {
+                send({code: 500, error: loan && loan.errors || err});
+            });
+            format.html(function () {
+                flash('error', 'Loan can not be updated');
+                flash('error', err.message ? (t(err.message) || err.message) : err);
+                render('show', {
+                    loan: loan.toCompoundViewObject(),
+                    title: t(['loans.details', loan.id])
+                });
             });
         });
     });
@@ -113,7 +107,7 @@ var pdf = require('node-pdf');
 var moment = require('moment');
 
 action(function contract() {
-  var loan = this.loan;
+  var loan = this.loan.attributes;
 
   var grantedUntil = moment(loan.granted_until, 'YYYY-MM-DD');
   var data = {
@@ -129,7 +123,7 @@ action(function contract() {
       valueInWords: inWords(loan.value),
       interest: loan.rate_of_interest,
       minimumTerm: loan.minimum_term,
-      yearlyInterestTo: loan.interest_yearly_to.replace(/\n/g, '\\\\'),
+      yearlyInterestTo: (loan.interest_yearly_to || '').replace(/\n/g, '\\\\'),
       grantedUntil: grantedUntil && grantedUntil.lang('de').format('LL'),
       cancelationPeriod: loan.cancelation_period
     }
@@ -146,38 +140,41 @@ action(function contract() {
 });
 
 function loadLoan() {
-    Loan.find(params.id || params.loan_id, function (err, loan) {
-        if (err || !loan) {
-            if (!err && !loan && params.format === 'json') {
+    new Loan({id: params.id || params.loan_id}).fetch().then(function (loan) {
+        if (!loan) {
+            if (params.format === 'json') {
                 return send({code: 404, error: 'Not found'});
             }
-            redirect(path_to.loans);
-        } else {
-            this.loan = loan;
-
-            this.steps = [{
-              isNextStep: loan.contract_state === null,
-              desc: t(['loans.contract_state.sent_to_loaner.desc', pathTo.contract_loan(loan)]),
-              stateType: 'contract_state',
-              state: 'sent_to_loaner',
-              isSet: loan.contract_state !== null,
-            }, {
-              isNextStep: loan.contract_state === 'sent_to_loaner' && req.user.can('receive signed contracts'),
-              stateType: 'contract_state',
-              state: 'signature_received',
-              isSet: loan.contract_state === 'signature_received' || loan.contract_state === 'signature_sent',
-            }, {
-              isNextStep: loan.loan_state === null && req.user.can('receive loans'),
-              stateType: 'loan_state',
-              state: 'loaned',
-              isSet: loan.loan_state !== null,
-            }, {
-              isNextStep: loan.contract_state === 'signature_received' && loan.loan_state === 'loaned' && req.user.can('receive signed contracts'),
-              stateType: 'contract_state',
-              state: 'signature_sent',
-              isSet: loan.contract_state === 'signature_sent'
-            }];
-            next();
+            return redirect(path_to.loans);
         }
+        this.loan = loan;
+        loan = loan.attributes;
+
+        this.steps = [{
+          isNextStep: loan.contract_state === null,
+          desc: t(['loans.contract_state.sent_to_loaner.desc', pathTo.contract_loan(this.loan)]),
+          stateType: 'contract_state',
+          state: 'sent_to_loaner',
+          isSet: loan.contract_state !== null,
+        }, {
+          isNextStep: loan.contract_state === 'sent_to_loaner' && req.user.can('receive signed contracts'),
+          stateType: 'contract_state',
+          state: 'signature_received',
+          isSet: loan.contract_state === 'signature_received' || loan.contract_state === 'signature_sent',
+        }, {
+          isNextStep: loan.loan_state === null && req.user.can('receive loans'),
+          stateType: 'loan_state',
+          state: 'loaned',
+          isSet: loan.loan_state !== null,
+        }, {
+          isNextStep: loan.contract_state === 'signature_received' && loan.loan_state === 'loaned' && req.user.can('receive signed contracts'),
+          stateType: 'contract_state',
+          state: 'signature_sent',
+          isSet: loan.contract_state === 'signature_sent'
+        }];
+        next();
+    }.bind(this), function (err) {
+        console.log(err);
+        redirect(path_to.loans);
     }.bind(this));
 }

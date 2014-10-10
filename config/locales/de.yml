@@ -69,6 +69,7 @@ de:
         loaner_email: 'E-Mail-Adresse'
         loaner_phone: 'Telefonnummer'
         notes: 'Anmerkungen'
+        date_created: 'Erstelldatum'
       descriptions:
         value: 'Der Kreditbetrag in Euro, ohne das Eurozeichen'
         interest_yearly_to: 'Nur ausfüllen, falls jährliche Zinszahlungen gewünscht sind!'
