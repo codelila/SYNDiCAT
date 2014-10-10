@@ -118,15 +118,13 @@ var contractGenerator = new ContractGenerator(function (data) {
       }
     });
   });
-});
+}, require(path.resolve('config/debtor')));
 
 action(function contract() {
   var loanId = this.loan.attributes.id;
 
-  contractGenerator.render({
-    debtor: require(path.resolve('config/debtor')),
-    loan: this.loan.attributes
-  }).then(function (rs) {
+  contractGenerator.render(this.loan.attributes)
+  .then(function (rs) {
     res.attachment('kreditvertrag-' + loanId + '.pdf');
     rs.pipe(res);
   }).catch(function (err) {

@@ -33,9 +33,8 @@ describe('ContractGenerator', function () {
   describe('render', function () {
     function makeRenderData (value) {
       value = value || {};
-      value.loan = value.loan || {};
-      value.loan.loaner_address = value.loan.loaner_address || '';
-      value.loan.value = value.loan.value || 1;
+      value.loaner_address = value.loaner_address || '';
+      value.value = value.value || 1;
       return value;
     }
 
@@ -50,14 +49,14 @@ describe('ContractGenerator', function () {
     });
 
     it('passes debtor to PDF renderer', function (done) {
+      var debtor = {};
       var renderPdf = sinon.spy(function () { return Promise.resolve(); });
-      var input = makeRenderData({ debtor: {} });
 
-      var contractGenerator = new ContractGenerator(renderPdf);
+      var contractGenerator = new ContractGenerator(renderPdf, debtor);
 
-      contractGenerator.render(input).then(function () {
+      contractGenerator.render(makeRenderData()).then(function () {
         assert.ok(renderPdf.calledWith(sinon.match({
-          debtor: input.debtor
+          debtor: debtor
         })));
         done();
       }).catch(done);
@@ -66,10 +65,8 @@ describe('ContractGenerator', function () {
     it('computes loaner info and passes it to PDF renderer', function (done) {
       var renderPdf = sinon.spy(function () { return Promise.resolve(); });
       var input = makeRenderData({
-        loan: {
-          loaner_name: 'Name',
-          loaner_address: 'There\nThis\nThat'
-        }
+        loaner_name: 'Name',
+        loaner_address: 'There\nThis\nThat'
       });
 
       var contractGenerator = new ContractGenerator(renderPdf);
@@ -88,9 +85,7 @@ describe('ContractGenerator', function () {
     it('passes formatted granted until to PDF renderer', function (done) {
       var renderPdf = sinon.spy(function () { return Promise.resolve(); });
       var input = makeRenderData({
-        loan: {
-          granted_until: '1970-01-02',
-        }
+        granted_until: '1970-01-02',
       });
 
       var contractGenerator = new ContractGenerator(renderPdf);
@@ -108,9 +103,7 @@ describe('ContractGenerator', function () {
     it('passes empty granted until to PDF renderer', function (done) {
       var renderPdf = sinon.spy(function () { return Promise.resolve(); });
       var input = makeRenderData({
-        loan: {
-          granted_until: ''
-        }
+        granted_until: ''
       });
 
       var contractGenerator = new ContractGenerator(renderPdf);
@@ -128,9 +121,7 @@ describe('ContractGenerator', function () {
     it('passes contract id to PDF renderer', function (done) {
       var renderPdf = sinon.spy(function () { return Promise.resolve(); });
       var input = makeRenderData({
-        loan: {
-          id: 5
-        }
+        id: 5
       });
 
       var contractGenerator = new ContractGenerator(renderPdf);
@@ -148,9 +139,7 @@ describe('ContractGenerator', function () {
     it('passes value to PDF renderer', function (done) {
       var renderPdf = sinon.spy(function () { return Promise.resolve(); });
       var input = makeRenderData({
-        loan: {
-          value: 1000
-        }
+        value: 1000
       });
 
       var contractGenerator = new ContractGenerator(renderPdf);
@@ -168,9 +157,7 @@ describe('ContractGenerator', function () {
     it('passes value in words to PDF renderer', function (done) {
       var renderPdf = sinon.spy(function () { return Promise.resolve(); });
       var input = makeRenderData({
-        loan: {
-          value: 1000
-        }
+        value: 1000
       });
 
       var contractGenerator = new ContractGenerator(renderPdf);
@@ -188,9 +175,7 @@ describe('ContractGenerator', function () {
     it('passes interest to PDF renderer', function (done) {
       var renderPdf = sinon.spy(function () { return Promise.resolve(); });
       var input = makeRenderData({
-        loan: {
-          rate_of_interest: 1
-        }
+        rate_of_interest: 1
       });
 
       var contractGenerator = new ContractGenerator(renderPdf);
@@ -208,9 +193,7 @@ describe('ContractGenerator', function () {
     it('passes minimum term to PDF renderer', function (done) {
       var renderPdf = sinon.spy(function () { return Promise.resolve(); });
       var input = makeRenderData({
-        loan: {
-          minimum_term: 1
-        }
+        minimum_term: 1
       });
 
       var contractGenerator = new ContractGenerator(renderPdf);
@@ -228,9 +211,7 @@ describe('ContractGenerator', function () {
     it('passes cancelation period to PDF renderer', function (done) {
       var renderPdf = sinon.spy(function () { return Promise.resolve(); });
       var input = makeRenderData({
-        loan: {
-          cancelation_period: 1
-        }
+        cancelation_period: 1
       });
 
       var contractGenerator = new ContractGenerator(renderPdf);
@@ -248,9 +229,7 @@ describe('ContractGenerator', function () {
     it('passes yearly interest to to PDF renderer', function (done) {
       var renderPdf = sinon.spy(function () { return Promise.resolve(); });
       var input = makeRenderData({
-        loan: {
-          interest_yearly_to: 'Here\nThat\nThere'
-        }
+        interest_yearly_to: 'Here\nThat\nThere'
       });
 
       var contractGenerator = new ContractGenerator(renderPdf);
@@ -268,9 +247,7 @@ describe('ContractGenerator', function () {
     it('passes empty yearly interest to to PDF renderer', function (done) {
       var renderPdf = sinon.spy(function () { return Promise.resolve(); });
       var input = makeRenderData({
-        loan: {
-          interest_to_yearly: ''
-        }
+        interest_to_yearly: ''
       });
 
       var contractGenerator = new ContractGenerator(renderPdf);

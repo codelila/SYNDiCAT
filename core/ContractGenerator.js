@@ -21,30 +21,32 @@ var inWords = require('in-words').de;
 var moment = require('moment');
 var Promise = require('es6-promise').Promise;
 
-var ContractGenerator = function (renderPdf) {
+var ContractGenerator = function (renderPdf, debtor) {
   this._renderPdf = renderPdf;
+  this._debtor = debtor;
 };
 
 ContractGenerator.prototype = {
+  _debtor: null,
   _renderPdf: null,
 
-  render: function (data) {
-    var grantedUntil = moment(data.loan.granted_until, 'YYYY-MM-DD');
+  render: function (loan) {
+    var grantedUntil = moment(loan.granted_until, 'YYYY-MM-DD');
     return this._renderPdf({
-      debtor: data.debtor,
+      debtor: this._debtor,
       loaner: {
-        name: data.loan.loaner_name,
-        address: data.loan.loaner_address.replace(/\n/g, '\\\\')
+        name: loan.loaner_name,
+        address: loan.loaner_address.replace(/\n/g, '\\\\')
       },
       contract: {
-        nr: data.loan.id,
-        value: data.loan.value,
-        valueInWords: inWords(data.loan.value),
-        interest: data.loan.rate_of_interest,
-        minimumTerm: data.loan.minimum_term,
-        yearlyInterestTo: (data.loan.interest_yearly_to || '').replace(/\n/g, '\\\\'),
+        nr: loan.id,
+        value: loan.value,
+        valueInWords: inWords(loan.value),
+        interest: loan.rate_of_interest,
+        minimumTerm: loan.minimum_term,
+        yearlyInterestTo: (loan.interest_yearly_to || '').replace(/\n/g, '\\\\'),
         grantedUntil: grantedUntil && grantedUntil.lang('de').format('LL'),
-        cancelationPeriod: data.loan.cancelation_period
+        cancelationPeriod: loan.cancelation_period
       }
     });
   }
