@@ -75,7 +75,7 @@ describe('LoanController', function() {
         .set('REMOTE_USER', 'remote user')
         .end(function (err, res) {
             res.statusCode.should.equal(200);
-            app.didRender(/loans\/new\.ejs$/i).should.be.true;
+            assert.ok(app.didRender(/loans\/new\.ejs$/i));
             done();
         });
     });
@@ -90,7 +90,7 @@ describe('LoanController', function() {
         .set('REMOTE_USER', 'remote user')
         .end(function (err, res) {
             res.statusCode.should.equal(200);
-            app.didRender(/loans\/index\.ejs$/i).should.be.true;
+            assert.ok(app.didRender(/loans\/index\.ejs$/i));
             done();
         });
     });
@@ -140,7 +140,7 @@ describe('LoanController', function() {
               update: function (attrs) {
                 updatedAttrs = attrs;
               }
-            }
+            };
         });
 
         request(app)
@@ -149,7 +149,7 @@ describe('LoanController', function() {
         .end(function (err, res) {
             res.statusCode.should.equal(200);
             fetchedId.should.equal('42');
-            app.didRender(/loans\/show\.ejs$/i).should.be.true;
+            assert.ok(app.didRender(/loans\/show\.ejs$/i));
             stub.restore();
 
             done();
@@ -198,7 +198,7 @@ describe('LoanController', function() {
         .end(function (err, res) {
             res.statusCode.should.equal(200);
 
-            app.didFlash('error').should.be.true;
+            assert.ok(app.didFlash('error'));
 
             done();
         });
@@ -215,7 +215,7 @@ describe('LoanController', function() {
         .end(function (err, res) {
             res.statusCode.should.equal(200);
 
-            app.didFlash('error').should.be.true;
+            assert.ok(app.didFlash('error'));
 
             done();
         });
@@ -448,7 +448,7 @@ describe('LoanController', function() {
               update: function (attrs) {
                 updatedAttrs = attrs;
               }
-            }
+            };
         });
 
         request(app)
@@ -462,7 +462,7 @@ describe('LoanController', function() {
             updatedAttrs.contract_state.should.equal('sent_to_loaner');
             updatedAttrs.date_contract_sent_to_loaner.should.match(/^\d{4}-\d{2}-\d{2}/);
             updatedAttrs.user_contract_sent_to_loaner.should.equal('remote user');
-            app.didFlash('error').should.be.false;
+            assert.equal(app.didFlash('error'), false);
 
             stub.restore();
             done();
@@ -486,7 +486,7 @@ describe('LoanController', function() {
               update: function (attrs) {
                 updatedAttrs = attrs;
               }
-            }
+            };
         });
 
         request(app)
@@ -497,7 +497,7 @@ describe('LoanController', function() {
             res.statusCode.should.not.equal(302);
             res.statusCode.should.not.equal(200);
             fetchedId.should.equal('42');
-            app.didFlash('error').should.be.true;
+            assert.ok(app.didFlash('error'));
 
             stub.restore();
             done();
@@ -520,7 +520,7 @@ describe('LoanController', function() {
               update: function (attrs) {
                 updatedAttrs = attrs;
               }
-            }
+            };
         });
 
         request(app)
