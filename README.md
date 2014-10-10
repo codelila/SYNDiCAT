@@ -26,7 +26,18 @@ npm install
 
 # Run tests
 npm test
+```
 
+Configuration
+-------------
+
+Copy ``config/debtor.json.example`` to ``config/debtor.json`` and edit it
+accordingly.
+
+Running
+----
+
+```sh
 # Start server in ADMIN_PARTY mode
 # You can kill the server anytime with Strg+C
 ADMIN_PARTY=someuser nodejs .
