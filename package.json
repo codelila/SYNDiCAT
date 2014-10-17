@@ -33,6 +33,6 @@
   }
 , "scripts":
   { "test": "./node_modules/.bin/mocha --require test/init.js --bail -R spec test/*/*.test.js",
-    "hint": "jshint app/ config/ test/ server.js"
+    "hint": "jshint core/ app/ config/ test/ server.js"
   }
 }

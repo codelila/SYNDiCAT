@@ -1,40 +1,21 @@
 'use strict';
 
 var Bookshelf = require('bookshelf');
-var tv4 = require('tv4');
+var Tv4Provider = require('../../core/Tv4Provider');
+var tv4Provider = new Tv4Provider();
+var tv4 = null;
 
 var l;
 
 module.exports = function(locale) {
   // FIXME: Does not really support getting an instance with your locale, last locale wins for all instances
+  // This is necessary for testability of loans_controller
 
   l = Object.create(locale);
-  l.FORMAT_CUSTOM = '{message}';
+  l.DATE = 'muss ein Datum im Format YYYY-MM-DD sein';
+  l.DATE_TIME = 'muss ein Datum sein';
 
-  tv4.addLanguage('custom', l);
-  tv4.language('custom');
-
-  tv4.addFormat('date', function (data, schema) {
-    if (typeof data === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(data)) {
-      return null;
-    }
-    return 'muss ein Datum im Format YYYY-MM-DD sein';
-  });
-
-  var dateTimeRegex = new RegExp(
-    '^' +
-    '(\\d{4})\\-(\\d{2})\\-(\\d{2})' +        // full-date
-    '[T ]' +
-    '(\\d{2}):(\\d{2}):(\\d{2})(\\.\\d+)?' +  // partial-time
-    '(Z|(?:([\\+|\\-])(\\d{2}):(\\d{2})))' +  // time-offset
-    '$'
-  );
-  tv4.addFormat('date-time', function (data, schema) {
-    if (typeof data === 'string' && dateTimeRegex.test(data)) {
-      return null;
-    }
-    return 'muss ein Datum sein';
-  });
+  tv4 = tv4Provider.getInstance(l);
 
   return Loan;
 };
