@@ -531,7 +531,73 @@ describe('LoanController', function() {
             stub.restore();
             done();
         });
-
     });
 
+    it('Correctly renders state on GET /loans/:id', function (done) {
+        var Loan = app.models.Loan;
+
+        var fetchedId = null;
+        var loan = LoanStub().attributes;
+        loan.contract_state = 'sent_to_loaner';
+        loan.loan_state = null;
+        var stub = sinon.stub(Loan.prototype, 'sync', function () {
+            fetchedId = this.id;
+            return {
+              first: function () {
+                loan.date_created = (new Date()).toISOString();
+                return when.resolve([ loan ]);
+              },
+              update: function (attrs) {
+                updatedAttrs = attrs;
+              }
+            };
+        });
+
+        request(app)
+        .get('/loans/42')
+        .set('REMOTE_USER', 'remote user')
+        .end(function (err, res) {
+            // FIXME: They are all disabled because the user has no rights
+            assert(res.text.match(/<input type="checkbox" name="Loan\[contract_state\]" value="sent_to_loaner" disabled\s+checked>/));
+            assert(res.text.match(/<input type="checkbox" name="Loan\[contract_state\]" value="signature_received" disabled\s*>/));
+            assert(res.text.match(/<input type="checkbox" name="Loan\[loan_state\]" value="loaned" disabled\s*>/));
+            assert(res.text.match(/<input type="checkbox" name="Loan\[contract_state\]" value="signature_sent" disabled\s*>/));
+            stub.restore();
+            done();
+        });
+    });
+
+    it('Correctly renders state for fresh loan on GET /loans/:id', function (done) {
+        var Loan = app.models.Loan;
+
+        var fetchedId = null;
+        var loan = LoanStub().attributes;
+        loan.contract_state = null;
+        loan.loan_state = null;
+        var stub = sinon.stub(Loan.prototype, 'sync', function () {
+            fetchedId = this.id;
+            return {
+              first: function () {
+                loan.date_created = (new Date()).toISOString();
+                return when.resolve([ loan ]);
+              },
+              update: function (attrs) {
+                updatedAttrs = attrs;
+              }
+            };
+        });
+
+        request(app)
+        .get('/loans/42')
+        .set('REMOTE_USER', 'remote user')
+        .end(function (err, res) {
+            // FIXME: They are all disabled because the user has no rights
+            assert(res.text.match(/<input type="checkbox" name="Loan\[contract_state\]" value="sent_to_loaner"\s*>/));
+            assert(res.text.match(/<input type="checkbox" name="Loan\[contract_state\]" value="signature_received" disabled\s*>/));
+            assert(res.text.match(/<input type="checkbox" name="Loan\[loan_state\]" value="loaned" disabled\s*>/));
+            assert(res.text.match(/<input type="checkbox" name="Loan\[contract_state\]" value="signature_sent" disabled\s*>/));
+            stub.restore();
+            done();
+        });
+    });
 });

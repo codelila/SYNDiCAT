@@ -4,6 +4,7 @@ var path = require('path');
 var Promise = require('es6-promise').Promise;
 
 var Loan = (require(path.resolve('app/model/loan_bookshelf.js'))(compound.__localeData[compound.app.settings.defaultLocale]));
+var LoanStates = require(path.resolve('core/LoanStates.js'));
 
 load('application');
 
@@ -141,30 +142,24 @@ function loadLoan() {
             return redirect(path_to.loans);
         }
         this.loan = loan;
-        loan = loan.attributes;
 
-        this.steps = [{
-          isNextStep: loan.contract_state === null,
-          desc: t(['loans.contract_state.sent_to_loaner.desc', pathTo.contract_loan(this.loan)]),
-          stateType: 'contract_state',
-          state: 'sent_to_loaner',
-          isSet: loan.contract_state !== null,
-        }, {
-          isNextStep: loan.contract_state === 'sent_to_loaner' && req.user.can('receive signed contracts'),
-          stateType: 'contract_state',
-          state: 'signature_received',
-          isSet: loan.contract_state === 'signature_received' || loan.contract_state === 'signature_sent',
-        }, {
-          isNextStep: loan.loan_state === null && req.user.can('receive loans'),
-          stateType: 'loan_state',
-          state: 'loaned',
-          isSet: loan.loan_state !== null,
-        }, {
-          isNextStep: loan.contract_state === 'signature_received' && loan.loan_state === 'loaned' && req.user.can('receive signed contracts'),
-          stateType: 'contract_state',
-          state: 'signature_sent',
-          isSet: loan.contract_state === 'signature_sent'
-        }];
+        var curState = {
+          contract: this.loan.get('contract_state'),
+          loan: this.loan.get('loan_state')
+        };
+        var rights = {
+          signature_received: 'receive signed contracts',
+          loaned: 'receive loans',
+          signature_sent: 'receive signed contracts'
+        };
+        this.steps = LoanStates.map(function (loanState) {
+          return {
+            isNextStep: loanState.isNext(curState) && (!rights[loanState.name] || req.user.can(rights[loanState.name])),
+            stateType: loanState.type,
+            state: loanState.name,
+            isSet: loanState.isSet(curState)
+          };
+        });
         next();
     }.bind(this), function (err) {
         console.log(err);
