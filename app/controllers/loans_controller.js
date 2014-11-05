@@ -4,7 +4,6 @@ var path = require('path');
 var Promise = require('es6-promise').Promise;
 
 var Loan = (require(path.resolve('app/model/loan_bookshelf.js'))(compound.__localeData[compound.app.settings.defaultLocale]));
-var LoanStates = require(path.resolve('core/LoanStates.js'));
 
 load('application');
 
@@ -63,14 +62,37 @@ action(function index() {
   });
 });
 
+var LoanStates = require(path.resolve('core/LoanStates.js'));
+function getSteps(loan, req) {
+  var curState = {
+    contract: loan.get('contract_state'),
+    loan: loan.get('loan_state')
+  };
+  var rights = {
+    signature_received: 'receive signed contracts',
+    loaned: 'receive loans',
+    signature_sent: 'receive signed contracts'
+  };
+  return LoanStates.map(function (loanState) {
+    return {
+      isNextStep: loanState.isNext(curState) && (!rights[loanState.name] || req.user.can(rights[loanState.name])),
+      stateType: loanState.type,
+      state: loanState.name,
+      isSet: loanState.isSet(curState)
+    };
+  });
+}
+
 action(function show() {
   this.title = t(['loans.details', this.loan.id]);
-  this.loan = this.loan.toCompoundViewObject();
+
   switch(params.format) {
     case "json":
       send({code: 200, data: this.loan.attributes});
       break;
     default:
+      this.steps = getSteps(this.loan, req);
+      this.loan = this.loan.toCompoundViewObject();
       render();
   }
 });
@@ -111,7 +133,7 @@ var pdf = require('node-pdf');
 var ContractGenerator = require(path.resolve('core/ContractGenerator'));
 var contractGenerator = new ContractGenerator(function (data) {
   return new Promise(function (resolve, reject) {
-    pdf.render(app.root + '/config/contract-template.tex', data, function (err,rs) {
+    pdf.render(path.resolve('config/contract-template.tex'), data, function (err,rs) {
       if (err) {
         reject(err);
       } else {
@@ -142,24 +164,6 @@ function loadLoan() {
             return redirect(path_to.loans);
         }
         this.loan = loan;
-
-        var curState = {
-          contract: this.loan.get('contract_state'),
-          loan: this.loan.get('loan_state')
-        };
-        var rights = {
-          signature_received: 'receive signed contracts',
-          loaned: 'receive loans',
-          signature_sent: 'receive signed contracts'
-        };
-        this.steps = LoanStates.map(function (loanState) {
-          return {
-            isNextStep: loanState.isNext(curState) && (!rights[loanState.name] || req.user.can(rights[loanState.name])),
-            stateType: loanState.type,
-            state: loanState.name,
-            isSet: loanState.isSet(curState)
-          };
-        });
         next();
     }.bind(this), function (err) {
         console.log(err);

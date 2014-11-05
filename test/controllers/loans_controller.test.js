@@ -150,6 +150,39 @@ describe('LoanController', function() {
             res.statusCode.should.equal(200);
             fetchedId.should.equal('42');
             assert.ok(app.didRender(/loans\/show\.ejs$/i));
+            assert.ok(res.text.match(/Loaner Name/));
+            stub.restore();
+
+            done();
+        });
+    });
+
+    it('should access Loan#find and render json on GET /loans/:id.json', function (done) {
+        var Loan = app.models.Loan;
+
+        var fetchedId = null;
+        var stub = sinon.stub(Loan.prototype, 'sync', function () {
+            var loan = this;
+            fetchedId = loan.id;
+            return {
+              first: function () {
+                var res = LoanStub().attributes;
+                res.date_created = (new Date()).toISOString();
+                return when.resolve([ res ]);
+              },
+              update: function (attrs) {
+                updatedAttrs = attrs;
+              }
+            };
+        });
+
+        request(app)
+        .get('/loans/42.json')
+        .set('REMOTE_USER', 'remote user')
+        .end(function (err, res) {
+            res.statusCode.should.equal(200);
+            fetchedId.should.equal('42');
+            assert.ok(res.text.match(/Loaner Name/));
             stub.restore();
 
             done();
