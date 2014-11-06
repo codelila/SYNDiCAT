@@ -6,6 +6,7 @@ var tv4Provider = new Tv4Provider();
 var tv4 = null;
 
 var l;
+var Loan;
 
 module.exports = function(locale) {
   // FIXME: Does not really support getting an instance with your locale, last locale wins for all instances
@@ -140,7 +141,7 @@ bookshelf.knex.schema.hasTable(tableName).then(function(exists) {
   }).then(console.log, console.log);
 });
 
-var Loan = bookshelf.Model.extend({
+Loan = bookshelf.Model.extend({
   tableName: tableName,
   hasTimestamps: false,
   idAttribute: 'id',
@@ -174,7 +175,10 @@ var Loan = bookshelf.Model.extend({
           throw 'Kündigungsfrist darf nicht gleichzeitig mit einem festen Ablaufdatum angegeben werden';
         } else if (this.attributes.granted_until && this.attributes.minimum_term) {
           throw 'Mindestlaufzeit darf nicht gleichzeitig mit einem festen Ablaufdatum angegeben werden';
-        } else if(!!this.attributes.cancelation_period !== !!this.attributes.minimum_term) {
+        } else if (
+          (typeof this.attributes.cancelation_period === 'undefined') !==
+          (typeof this.attributes.minimum_term === 'undefined')
+        ) {
           throw 'Mindestlaufzeit und Kündigungsfrist müssen zusammen angegeben werden';
         } else if (!this.attributes.cancelation_period && !this.attributes.granted_until) {
           throw 'Kündigungsfrist oder festes Ablaufdatum muss angegeben werden';

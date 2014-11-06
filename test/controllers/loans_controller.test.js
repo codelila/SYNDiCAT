@@ -136,9 +136,6 @@ describe('LoanController', function() {
                 var res = LoanStub().attributes;
                 res.date_created = (new Date()).toISOString();
                 return when.resolve([ res ]);
-              },
-              update: function (attrs) {
-                updatedAttrs = attrs;
               }
             };
         });
@@ -169,9 +166,6 @@ describe('LoanController', function() {
                 var res = LoanStub().attributes;
                 res.date_created = (new Date()).toISOString();
                 return when.resolve([ res ]);
-              },
-              update: function (attrs) {
-                updatedAttrs = attrs;
               }
             };
         });
@@ -515,9 +509,6 @@ describe('LoanController', function() {
                 var res = LoanStub().attributes;
                 res.date_created = (new Date()).toISOString();
                 return when.resolve([ res ]);
-              },
-              update: function (attrs) {
-                updatedAttrs = attrs;
               }
             };
         });
@@ -549,9 +540,6 @@ describe('LoanController', function() {
                 var res = LoanStub().attributes;
                 res.date_created = (new Date()).toISOString();
                 return when.resolve([ res ]);
-              },
-              update: function (attrs) {
-                updatedAttrs = attrs;
               }
             };
         });
@@ -579,9 +567,6 @@ describe('LoanController', function() {
               first: function () {
                 loan.date_created = (new Date()).toISOString();
                 return when.resolve([ loan ]);
-              },
-              update: function (attrs) {
-                updatedAttrs = attrs;
               }
             };
         });
@@ -613,9 +598,6 @@ describe('LoanController', function() {
               first: function () {
                 loan.date_created = (new Date()).toISOString();
                 return when.resolve([ loan ]);
-              },
-              update: function (attrs) {
-                updatedAttrs = attrs;
               }
             };
         });
