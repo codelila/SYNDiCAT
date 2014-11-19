@@ -46,43 +46,41 @@ describe('LoanModel', function () {
     loan.save().then(function (l) {
       return l.set('contract_state', 'sent_to_loaner').save();
     }).then(function (m) {
-      if (m.get('contract_state') !== 'sent_to_loaner') {
-        throw new Error('Should have saved successfully');
-      }
+      assert.equal(m.get('contract_state'), 'sent_to_loaner');
       done();
-    }, function (err) {
-      done(err);
+    }).then(null, done);
+  });
+
+  it('does not allow arbitrary updates of contract_state', function (done) {
+    var loan = loanStub();
+    loan.save().then(function (l) {
+      return l.set('contract_state', 'signature_received').save();
+    }).then(function (m) {
+      done('Should not have saved successfully');
+    }).then(null, function(err) {
+      assert.equal(err.message, 'You are trying to do bad stuff');
+      done();
     });
   });
 
   it('updates date_contract_sent_to_loaner', function (done) {
     var loan = loanStub();
     loan.save().then(function (l) {
-      if (l.get('date_contract_sent_to_loaner')) {
-        throw new Error('date_contract_sent_to_loaner already set');
-      }
+      assert.equal(l.get('date_contract_sent_to_loaner'), null);
       return l.set('contract_state', 'sent_to_loaner').save();
-    }).then(function (m) {
-      if (m.get('date_contract_sent_to_loaner') === null) {
-        throw new Error('Did not update date_contract_sent_to_loaner');
-      }
+    }).then(function (l) {
+      assert.notEqual(l.get('date_contract_sent_to_loaner'), null);
       done();
-    }, function (err) {
-      done(err);
-    });
+    }).then(null, done);
   });
 
   it('updates user_contract_sent_to_loaner', function (done) {
     var loan = loanStub();
     loan.save().then(function (l) {
-      if (l.get('user_contract_sent_to_loaner')) {
-        throw new Error('user_contract_sent_to_loaner already set');
-      }
+      assert.equal(l.get('user_contract_sent_to_loaner'), null);
       return l.set('contract_state', 'sent_to_loaner').save();
-    }).then(function (m) {
-      if (m.get('user_contract_sent_to_loaner') !== 'Me') {
-        throw new Error('Did not update user_contract_sent_to_loaner');
-      }
+    }).then(function (l) {
+      assert.equal(l.get('user_contract_sent_to_loaner'), 'Me');
       done();
     }, function (err) {
       done(err);
