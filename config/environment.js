@@ -25,7 +25,7 @@ module.exports = function (compound) {
           };
           next();
         });
-        app.use(require('./authorization'));
+        app.set('validator', require('./validation'));
         app.use(express.static(app.root + '/public', { maxAge: 86400000 }));
         app.set('jsDirectory', '/javascripts/');
         app.set('cssDirectory', '/stylesheets/');

@@ -1,20 +1,24 @@
 'use strict';
 
 var Bookshelf = require('bookshelf');
+
 var Tv4Provider = require('../../core/Tv4Provider');
 var tv4Provider = new Tv4Provider();
 var tv4 = null;
 
 var l;
+var changeValidator;
 var Loan;
 
-module.exports = function(locale) {
+module.exports = function(locale, _validator) {
   // FIXME: Does not really support getting an instance with your locale, last locale wins for all instances
   // This is necessary for testability of loans_controller
 
   l = Object.create(locale);
   l.DATE = 'muss ein Datum im Format YYYY-MM-DD sein';
   l.DATE_TIME = 'muss ein Datum sein';
+
+  changeValidator = _validator;
 
   tv4 = tv4Provider.getInstance(l);
 
@@ -189,28 +193,21 @@ Loan = bookshelf.Model.extend({
     }
   },
   validateUpdate: function () {
+    var error = changeValidator.validateChange({
+      user: this._curUser.id,
+      date: Date.now(),
+      old: this._previousAttributes,
+      diff: this.changed
+    });
+    if (error) {
+      throw new Error(error);
+    }
     var loan = this;
     var updateableKeys = [ 'contract_state', 'loan_state' ];
 
-    if (!this._previousAttributes.contract_state && this.changed.contract_state === 'sent_to_loaner') {
-    } else if (this._previousAttributes.contract_state === 'sent_to_loaner' && this.changed.contract_state === 'signature_received' &&
-      this._curUser.can('receive signed contracts')) {
-    } else if (this._previousAttributes.contract_state === 'signature_received' && this.changed.contract_state === 'signature_sent' &&
-      this._curUser.can('receive signed contracts')) {
-    } else if (this.changed.contract_state) {
-      throw new Error('You are trying to do bad stuff');
-    }
-    if (!this._previousAttributes.loan_state && this.changed.loan_state === 'loaned' &&
-      this._curUser.can('receive loans')) {
-    } else if (this.changed.loan_state) {
-      throw new Error('You are trying to do bad stuff');
-    }
-
     Object.keys(loan.changed).forEach(function (key) {
       if (loan.changed[key] !== loan._previousAttributes[key]) {
-        if (updateableKeys.indexOf(key) === -1) {
-          throw new Error('Not allowed to update ' + key);
-        } else {
+        if (updateableKeys.indexOf(key) !== -1) {
           var skey = (key.substr(0, key.indexOf('_'))) + '_' + loan.get(key);
           loan.set('date_' + skey, (new Date()).toISOString());
           loan.set('user_' + skey, loan._curUser.id);

@@ -3,7 +3,10 @@
 var path = require('path');
 var Promise = require('es6-promise').Promise;
 
-var Loan = (require(path.resolve('app/model/loan_bookshelf.js'))(compound.__localeData[compound.app.settings.defaultLocale]));
+var LoanGetter = require(path.resolve('app/model/loan_bookshelf.js'));
+
+var validator = compound.app.settings.validator;
+var Loan = LoanGetter(compound.__localeData[compound.app.settings.defaultLocale], validator);
 
 load('application');
 
@@ -12,9 +15,11 @@ before(loadLoan, {
     });
 
 action('new', function () {
-    this.title = t('loans.new');
-    this.loan = new Loan().toCompoundViewObject();
-    render();
+    render({
+      loan: new Loan().toCompoundViewObject(),
+      title: t('loans.new'),
+      user: req.user
+    });
 });
 
 action(function create() {
@@ -41,7 +46,8 @@ action(function create() {
                 flash('error', err.message ? (t(err.message) || err.message) : err);
                 render('new', {
                     loan: data.toCompoundViewObject(),
-                    title: t('loans.new')
+                    title: t('loans.new'),
+                    user: req.user
                 });
             });
         });
@@ -49,7 +55,6 @@ action(function create() {
 });
 
 action(function index() {
-  this.title = t('loans.index');
   (new Loan.Collection()).fetch().then(function (loans) {
     loans = loans.models;
     switch (params.format) {
@@ -57,25 +62,32 @@ action(function index() {
         send({code: 200, data: loans});
         break;
       default:
-        render({loans: loans});
+        render({
+          loans: loans,
+          title: t('loans.index'),
+          user: req.user
+        });
     }
   });
 });
 
 var LoanStates = require(path.resolve('core/LoanStates.js'));
-function getSteps(loan, req) {
+function getSteps(loan, user, validator) {
   var curState = {
     contract: loan.get('contract_state'),
     loan: loan.get('loan_state')
   };
-  var rights = {
-    signature_received: 'receive signed contracts',
-    loaned: 'receive loans',
-    signature_sent: 'receive signed contracts'
-  };
   return LoanStates.map(function (loanState) {
+    var newProps = {};
+    newProps[loanState.type] = loanState.name;
+    var change = {
+      user: user,
+      date: Date.now(),
+      old: loan,
+      diff: newProps
+    };
     return {
-      isNextStep: loanState.isNext(curState) && (!rights[loanState.name] || req.user.can(rights[loanState.name])),
+      isNextStep: loanState.isNext(curState) && validator.validateChange(change) === null,
       stateType: loanState.type,
       state: loanState.name,
       isSet: loanState.isSet(curState)
@@ -84,22 +96,22 @@ function getSteps(loan, req) {
 }
 
 action(function show() {
-  this.title = t(['loans.details', this.loan.id]);
-
   switch(params.format) {
     case "json":
       send({code: 200, data: this.loan.attributes});
       break;
     default:
-      this.steps = getSteps(this.loan, req);
-      this.loan = this.loan.toCompoundViewObject();
-      render();
+      render({
+        loan: this.loan.toCompoundViewObject(),
+        steps: getSteps(this.loan, req.user.id, validator),
+        title: t(['loans.details', this.loan.id]),
+        user: req.user
+      });
   }
 });
 
 action(function put_state() {
-    var loan = this.loan;
-    loan.setCurUser(req.user);
+    this.loan.setCurUser(req.user);
 
     this.loan.set(body.Loan);
     this.loan.save().then(function () {
@@ -120,10 +132,7 @@ action(function put_state() {
             format.html(function () {
                 flash('error', 'Loan can not be updated');
                 flash('error', err.message ? (t(err.message) || err.message) : err);
-                render('show', {
-                    loan: loan.toCompoundViewObject(),
-                    title: t(['loans.details', loan.id])
-                });
+                redirect(path_to.loan(loan));
             });
         });
     });

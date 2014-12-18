@@ -1,7 +1,5 @@
 'use strict';
 
-var user = require('connect-roles');
-
 var groups = {
   paperwork: [ 'julian', 'franziska' ],
   account: [ 'adrian' ]
@@ -17,16 +15,12 @@ var groupPermissions = [
   }
 ];
 
-function groupBased(groupName) {
-  return function (req) {
-    if (groups[groupName].indexOf(req.user.id) !== -1) {
-      return true;
+module.exports = function (user, right) {
+  var allowed = false;
+  groupPermissions.forEach(function (o) {
+    if (o.action === right && groups[o.group].indexOf(user) !== -1 ) {
+      allowed = true;
     }
-  };
-}
-
-groupPermissions.forEach(function (o) {
-  user.use(o.action, groupBased(o.group));
-});
-
-module.exports = user;
+  });
+  return allowed;
+};

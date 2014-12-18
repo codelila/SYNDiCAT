@@ -12,7 +12,6 @@
   , "stylus": "latest"
   , "seedjs": "latest"
   , "co-assets-compiler": "*"
-  , "connect-roles": "~2.1"
   , "node-pdf": ""
   , "in-words": ""
   , "moment": ""
