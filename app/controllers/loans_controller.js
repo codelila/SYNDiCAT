@@ -111,6 +111,7 @@ action(function show() {
 });
 
 action(function put_state() {
+    var loan = this.loan;
     this.loan.setCurUser(req.user);
 
     this.loan.set(body.Loan);
