@@ -24,7 +24,7 @@ action('new', function () {
 
 action(function create() {
     var data = Loan.fromStringHash(req.body.Loan);
-    data.setCurUser(req.user);
+    data.setCurUser(req.user.id);
 
     data.save().then(function (loan) {
         respondTo(function (format) {
@@ -112,7 +112,7 @@ action(function show() {
 
 action(function put_state() {
     var loan = this.loan;
-    this.loan.setCurUser(req.user);
+    this.loan.setCurUser(req.user.id);
 
     this.loan.set(body.Loan);
     this.loan.save().then(function () {

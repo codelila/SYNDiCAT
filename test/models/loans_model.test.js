@@ -23,7 +23,7 @@ function loanStub() {
     rate_of_interest: 0, granted_until: '2013-01-01', user_created: 'Me',
     date_created: (new Date()).toISOString()
   });
-  loan.setCurUser({id: 'Me', can: function () { return true; }});
+  loan.setCurUser('Me');
   return loan;
 }
 

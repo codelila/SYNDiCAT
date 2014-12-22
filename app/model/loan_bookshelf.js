@@ -155,7 +155,7 @@ Loan = bookshelf.Model.extend({
         this.set('date_created', (new Date()).toISOString());
       }
       if (!this.get('user_created')) {
-        this.set('user_created', this._curUser.id);
+        this.set('user_created', this._curUser);
       }
     }, this);
     this.on('updating', this.validateUpdate, this);
@@ -194,7 +194,7 @@ Loan = bookshelf.Model.extend({
   },
   validateUpdate: function () {
     var error = changeValidator.validateChange({
-      user: this._curUser.id,
+      user: this._curUser,
       date: Date.now(),
       old: this._previousAttributes,
       diff: this.changed
@@ -210,7 +210,7 @@ Loan = bookshelf.Model.extend({
         if (updateableKeys.indexOf(key) !== -1) {
           var skey = (key.substr(0, key.indexOf('_'))) + '_' + loan.get(key);
           loan.set('date_' + skey, (new Date()).toISOString());
-          loan.set('user_' + skey, loan._curUser.id);
+          loan.set('user_' + skey, loan._curUser);
         }
       }
     });
