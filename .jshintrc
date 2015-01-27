@@ -119,7 +119,7 @@
     "maxparams"     : 4,
     "maxlen"        : 150,
     "maxdepth"      : 3,
-    "maxstatements" : 9,
+    "maxstatements" : 24,
 
     "globals": {
       "Promise": true            // Allow polyfilling Promise

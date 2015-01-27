@@ -11,8 +11,9 @@ var changeValidator;
 var Loan;
 
 module.exports = function(locale, _validator) {
-  // FIXME: Does not really support getting an instance with your locale, last locale wins for all instances
-  // This is necessary for testability of loans_controller
+  // FIXME: Does not really support getting an instance with your locale or validator.
+  // Instead, last call overwrites these for all instances.
+  // This is still necessary for testability of loans_controller
 
   l = Object.create(locale);
   l.DATE = 'muss ein Datum im Format YYYY-MM-DD sein';

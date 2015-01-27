@@ -4,6 +4,7 @@ require('should');
 
 global.getApp = function(done) {
     var app = require('compound').createServer();
+    app.enable('quiet');
 
     app.renderedViews = [];
     app.flashedMessages = {};
