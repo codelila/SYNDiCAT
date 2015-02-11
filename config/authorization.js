@@ -18,7 +18,7 @@ var groupPermissions = [
 module.exports = function (user, right) {
   var allowed = false;
   groupPermissions.forEach(function (o) {
-    if (o.action === right && groups[o.group].indexOf(user) !== -1 ) {
+    if (o.action === right && groups[o.group].indexOf(user) !== -1) {
       allowed = true;
     }
   });

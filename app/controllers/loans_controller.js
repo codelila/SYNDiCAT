@@ -3,10 +3,8 @@
 var path = require('path');
 var Promise = require('es6-promise').Promise;
 
-var LoanGetter = require(path.resolve('app/model/loan_bookshelf.js'));
-
 var validator = compound.app.settings.validator;
-var Loan = LoanGetter(compound.__localeData[compound.app.settings.defaultLocale], validator);
+var Loan = compound.app.settings.getLoan();
 
 load('application');
 
@@ -83,7 +81,7 @@ function getSteps(loan, user, validator) {
     var change = {
       user: user,
       date: Date.now(),
-      old: loan,
+      old: loan.attributes,
       diff: newProps
     };
     return {

@@ -2,6 +2,7 @@
 
 module.exports = function (compound) {
 
+    var Bookshelf = require('bookshelf');
     var express = require('express');
     var app = compound.app;
 
@@ -25,13 +26,34 @@ module.exports = function (compound) {
           };
           next();
         });
+        app.set('i18n', 'on');
+        app.set('defaultLocale', 'de');
         app.set('validator', require('./validation'));
+        // Makes getLoan injectable. Sucks.
+        if (!app.get('getLoan')) {
+          var Loan = null;
+          app.set('getLoan', function() {
+            if (!Loan) {
+              Loan = require('../app/model/loan_bookshelf.js')(
+                // localeData is not yet loaded, that's why we need to use a getter.
+                // FIXME: Move away from compound i18n component
+                app.compound.__localeData[app.settings.defaultLocale] || {},
+                app.get('validator'),
+                Bookshelf.initialize({
+                  client: 'sqlite',
+                  connection: {
+                    filename: './var/development.sqlite3'
+                  }
+                })
+              );
+            }
+            return Loan;
+          });
+        }
         app.use(express.static(app.root + '/public', { maxAge: 86400000 }));
         app.set('jsDirectory', '/javascripts/');
         app.set('cssDirectory', '/stylesheets/');
         app.set('cssEngine', 'stylus');
-        app.set('i18n', 'on');
-        app.set('defaultLocale', 'de');
         app.set('autoupdate', 'on');
 
         app.use(express.bodyParser());

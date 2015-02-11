@@ -3,6 +3,8 @@
 var assert = require('assert');
 var sinon = require('sinon');
 
+var testBookshelf = require('../testBookshelf');
+
 var strings = {
   models: {
     Loan: {
@@ -16,7 +18,7 @@ var strings = {
   }
 };
 
-var Loan = require('../../app/model/loan_bookshelf.js')(strings);
+var Loan = require('../../app/model/loan_bookshelf.js')(strings, null, testBookshelf);
 
 function loanStub() {
   var loan = new Loan({value: 10, loaner_name: 'Ich', loaner_address: 'Here',

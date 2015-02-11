@@ -1,25 +1,13 @@
 'use strict';
 
+var testBookshelf = require('../testBookshelf');
 var app, compound
 , assert = require('assert')
 , request = require('supertest')
 , sinon   = require('sinon')
 , when = require('when');
 
-var strings = {
-  models: {
-    Loan: {
-      fields: {
-        granted_until: 'Kredit gewährt bis'
-      }
-    }
-  },
-  validate: {
-    date: 'muss ein Datum im Format YYYY-MM-DD sein'
-  }
-};
-
-var Loan = require('../../app/model/loan_bookshelf.js')(strings);
+var Loan;
 
 function extend(obj) {
     Array.prototype.slice.call(arguments, 1).forEach(function(source) {
@@ -47,21 +35,19 @@ var loanStubStringHash = {
   date_loan_repaid: '',
   user_created: 'me'
 };
-var loanStub = Loan.fromStringHash(loanStubStringHash);
 
 function LoanStub () {
-  var _ret = Object.create(loanStub);
+  var _ret = Object.create(Loan.fromStringHash(loanStubStringHash));
   _ret.attributes = Object.create(_ret.attributes);
   return _ret;
 }
 
-describe('LoanController', function() {
+describe('SYNDiCAT', function() {
     beforeEach(function(done) {
         app = getApp();
-        compound = app.compound;
-        compound.on('ready', function() {
-            app.models.Loan = Loan;
-            done();
+        process.nextTick(function() {
+          Loan = app.settings.getLoan();
+          done();
         });
     });
 
@@ -75,7 +61,10 @@ describe('LoanController', function() {
         .set('REMOTE_USER', 'remote user')
         .end(function (err, res) {
             res.statusCode.should.equal(200);
-            assert.ok(app.didRender(/loans\/new\.ejs$/i));
+            // Make sure there is a form
+            assert.ok(res.text.match(/<form action="\/loans" method="POST" id="loan-form"/));
+            // Make sure it's empty
+            assert.ok(res.text.match(/<input name="Loan\[value\]" id="Loan_value" type="text" value="" \/>/));
             done();
         });
     });
@@ -101,8 +90,6 @@ describe('LoanController', function() {
      */
 /*
     it('should access Loan#find and render "edit" template on GET /loans/:id/edit', function (done) {
-        var Loan = app.models.Loan;
-
         // Mock Loan#find
         Loan.find = sinon.spy(function (id, callback) {
             callback(null, new Loan);
@@ -124,62 +111,38 @@ describe('LoanController', function() {
      * GET /loans/:id
      * Should render loans/index.ejs
      */
-    it('should access Loan#find and render "show" template on GET /loans/:id', function (done) {
-        var Loan = app.models.Loan;
+    it('should render "show" template on GET /loans/:id', function (done) {
+        var loan = Loan.forge(LoanStub().attributes);
 
-        var fetchedId = null;
-        var stub = sinon.stub(Loan.prototype, 'sync', function () {
-            var loan = this;
-            fetchedId = loan.id;
-            return {
-              first: function () {
-                var res = LoanStub().attributes;
-                res.date_created = (new Date()).toISOString();
-                return when.resolve([ res ]);
-              }
-            };
-        });
+        loan.save().then(function (loan) {
+          request(app)
+          .get('/loans/' + loan.id)
+          .set('REMOTE_USER', 'remote user')
+          .end(function (err, res) {
+              res.statusCode.should.equal(200);
+              assert.ok(app.didRender(/loans\/show\.ejs$/i));
+              assert.ok(res.text.match(loan.id));
+              assert.ok(res.text.match(/Loaner Name/));
 
-        request(app)
-        .get('/loans/42')
-        .set('REMOTE_USER', 'remote user')
-        .end(function (err, res) {
-            res.statusCode.should.equal(200);
-            fetchedId.should.equal('42');
-            assert.ok(app.didRender(/loans\/show\.ejs$/i));
-            assert.ok(res.text.match(/Loaner Name/));
-            stub.restore();
-
-            done();
+              done();
+          });
         });
     });
 
     it('should access Loan#find and render json on GET /loans/:id.json', function (done) {
-        var Loan = app.models.Loan;
+        var loan = Loan.forge(LoanStub().attributes);
 
-        var fetchedId = null;
-        var stub = sinon.stub(Loan.prototype, 'sync', function () {
-            var loan = this;
-            fetchedId = loan.id;
-            return {
-              first: function () {
-                var res = LoanStub().attributes;
-                res.date_created = (new Date()).toISOString();
-                return when.resolve([ res ]);
-              }
-            };
-        });
+        loan.save().then(function (loan) {
+          request(app)
+          .get('/loans/' + loan.id + '.json')
+          .set('REMOTE_USER', 'remote user')
+          .end(function (err, res) {
+              res.statusCode.should.equal(200);
+              assert.ok(res.text.match(loan.id));
+              assert.ok(res.text.match(/Loaner Name/));
 
-        request(app)
-        .get('/loans/42.json')
-        .set('REMOTE_USER', 'remote user')
-        .end(function (err, res) {
-            res.statusCode.should.equal(200);
-            fetchedId.should.equal('42');
-            assert.ok(res.text.match(/Loaner Name/));
-            stub.restore();
-
-            done();
+              done();
+          });
         });
     });
 
@@ -188,13 +151,7 @@ describe('LoanController', function() {
      * Should access Loan#create when Loan is valid
      */
     it('should access Loan#create on POST /loans with a valid Loan', function (done) {
-        var Loan = app.models.Loan
-        , loan = loanStubStringHash;
-
-        // Mock Loan#create
-        var stub = sinon.spy(Loan, 'fromStringHash', function () {
-            return LoanStub();
-        });
+        var loan = loanStubStringHash;
 
         request(app)
         .post('/loans')
@@ -202,9 +159,7 @@ describe('LoanController', function() {
         .send({ "Loan": loan })
         .end(function (err, res) {
             res.statusCode.should.equal(302);
-            // FIXME Loan.fromStringHash.calledWith(loan).should.be.true;
-
-            Loan.fromStringHash.restore();
+            // FIXME: test
 
             done();
         });
@@ -215,8 +170,7 @@ describe('LoanController', function() {
      * Should fail when Loan is invalid
      */
     it('should fail on POST /loans when Loan#create returns an error', function (done) {
-        var Loan = app.models.Loan
-        , loan = extend({}, loanStubStringHash, {value: ''});
+        var loan = extend({}, loanStubStringHash, {value: ''});
 
         request(app)
         .post('/loans')
@@ -232,8 +186,7 @@ describe('LoanController', function() {
     });
 
     it('should fail on POST /loans when no rate of interest given', function (done) {
-        var Loan = app.models.Loan
-        , loan = extend({}, loanStubStringHash, {rate_of_interest: ''});
+        var loan = extend({}, loanStubStringHash, {rate_of_interest: ''});
 
         request(app)
         .post('/loans')
@@ -249,8 +202,7 @@ describe('LoanController', function() {
     });
 
     it('requires minimum term if cancelation period is given', function (done) {
-        var Loan = app.models.Loan
-        , loan = extend({}, loanStubStringHash, {cancelation_period: '3', minimum_term: ''});
+        var loan = extend({}, loanStubStringHash, {cancelation_period: '3', minimum_term: ''});
 
         request(app)
         .post('/loans')
@@ -264,8 +216,7 @@ describe('LoanController', function() {
     });
 
     it('requires cancelation period if minimum term is given', function (done) {
-        var Loan = app.models.Loan
-        , loan = extend({}, loanStubStringHash, {cancelation_period: '', minimum_term: '3'});
+        var loan = extend({}, loanStubStringHash, {cancelation_period: '', minimum_term: '3'});
 
         request(app)
         .post('/loans')
@@ -279,8 +230,7 @@ describe('LoanController', function() {
     });
 
     it('requires cancelation period, minimum term or given until', function (done) {
-        var Loan = app.models.Loan
-        , loan = extend({}, loanStubStringHash, {cancelation_period: '', minimum_term: '', granted_until: ''});
+        var loan = extend({}, loanStubStringHash, {cancelation_period: '', minimum_term: '', granted_until: ''});
 
         request(app)
         .post('/loans')
@@ -294,8 +244,7 @@ describe('LoanController', function() {
     });
 
     it('does not allow cancelation period be given together with granted until', function (done) {
-        var Loan = app.models.Loan
-        , loan = extend({}, loanStubStringHash, {cancelation_period: '3', minimum_term: '', granted_until: '2013-01-01'});
+        var loan = extend({}, loanStubStringHash, {cancelation_period: '3', minimum_term: '', granted_until: '2013-01-01'});
 
         request(app)
         .post('/loans')
@@ -309,8 +258,7 @@ describe('LoanController', function() {
     });
 
     it('does not allow minimum term be given together with granted until', function (done) {
-        var Loan = app.models.Loan
-        , loan = extend({}, loanStubStringHash, {cancelation_period: '', minimum_term: '3', granted_until: '2013-01-01'});
+        var loan = extend({}, loanStubStringHash, {cancelation_period: '', minimum_term: '3', granted_until: '2013-01-01'});
 
         request(app)
         .post('/loans')
@@ -324,8 +272,7 @@ describe('LoanController', function() {
     });
 
     it('does not allow cancelation period and minimum term be given together with granted until', function (done) {
-        var Loan = app.models.Loan
-        , loan = extend({}, loanStubStringHash, {cancelation_period: '3', minimum_term: '3', granted_until: '2013-01-01'});
+        var loan = extend({}, loanStubStringHash, {cancelation_period: '3', minimum_term: '3', granted_until: '2013-01-01'});
 
         request(app)
         .post('/loans')
@@ -339,8 +286,7 @@ describe('LoanController', function() {
     });
 
     it('accepts granted_until', function (done) {
-        var Loan = app.models.Loan
-        , loan = extend({}, loanStubStringHash, {cancelation_period: '', minimum_term: '', granted_until: '2013-01-01'});
+        var loan = extend({}, loanStubStringHash, {cancelation_period: '', minimum_term: '', granted_until: '2013-01-01'});
 
         request(app)
         .post('/loans')
@@ -353,8 +299,7 @@ describe('LoanController', function() {
     });
 
     it('checks format of granted until', function (done) {
-        var Loan = app.models.Loan
-        , loan = extend({}, loanStubStringHash, {cancelation_period: '', minimum_term: '', granted_until: '2013-0101'});
+        var loan = extend({}, loanStubStringHash, {cancelation_period: '', minimum_term: '', granted_until: '2013-0101'});
 
         request(app)
         .post('/loans')
@@ -368,8 +313,7 @@ describe('LoanController', function() {
     });
 
     it('checks format of granted until', function (done) {
-        var Loan = app.models.Loan
-        , loan = extend({}, loanStubStringHash, {cancelation_period: '', minimum_term: '', granted_until: '2013-0101'});
+        var loan = extend({}, loanStubStringHash, {cancelation_period: '', minimum_term: '', granted_until: '2013-0101'});
 
         request(app)
         .post('/loans')
@@ -388,8 +332,7 @@ describe('LoanController', function() {
      */
 /*
     it('should redirect on PUT /loans/:id with a valid Loan', function (done) {
-        var Loan = app.models.Loan
-        , loan = LoanStub();
+        var loan = LoanStub();
 
         var fetchedId = null;
         Loan.prototype.fetch = sinon.spy(function () {
@@ -421,8 +364,7 @@ describe('LoanController', function() {
      */
 /*
     it('should fail / not redirect on PUT /loans/:id with an invalid Loan', function (done) {
-        var Loan = app.models.Loan
-        , loan = LoanStub();
+        var loan = LoanStub();
 
         var fetchedId = null;
         Loan.prototype.fetch = sinon.spy(function () {
@@ -460,8 +402,6 @@ describe('LoanController', function() {
 
     // FIXME: remote user is not allowed to update loan state
     it('should update state on PUT /loans/:id/state', false && function (done) {
-        var Loan = app.models.Loan;
-
         var fetchedId = null;
         var updatedAttrs = null;
         var stub = sinon.stub(Loan.prototype, 'sync', function () {
@@ -499,8 +439,6 @@ describe('LoanController', function() {
 
     // FIXME
     it('should respond with error code on invalid PUT /loans/:id/state', false && function (done) {
-        var Loan = app.models.Loan;
-
         var fetchedId = null;
         var stub = sinon.stub(Loan.prototype, 'sync', function () {
             var loan = this;
@@ -530,65 +468,38 @@ describe('LoanController', function() {
     });
 
     it('renders PDF on GET /loans/:id/contract', function (done) {
-        var Loan = app.models.Loan;
-
-        var fetchedId = null;
-        var stub = sinon.stub(Loan.prototype, 'sync', function () {
-            var loan = this;
-            fetchedId = loan.id;
-            return {
-              first: function () {
-                var res = LoanStub().attributes;
-                res.date_created = (new Date()).toISOString();
-                return when.resolve([ res ]);
-              }
-            };
-        });
-
         request(app)
         .get('/loans/42/contract')
         .set('REMOTE_USER', 'remote user')
         .end(function (err, res) {
             assert(res.text.match(/%PDF-1\.5/));
-            stub.restore();
             done();
         });
     });
 
     it('Correctly renders state on GET /loans/:id', function (done) {
-        var Loan = app.models.Loan;
+        var loan = Loan.forge(LoanStub().attributes);
 
-        var fetchedId = null;
-        var loan = LoanStub().attributes;
-        loan.contract_state = 'sent_to_loaner';
-        loan.loan_state = null;
-        var stub = sinon.stub(Loan.prototype, 'sync', function () {
-            fetchedId = this.id;
-            return {
-              first: function () {
-                loan.date_created = (new Date()).toISOString();
-                return when.resolve([ loan ]);
-              }
-            };
-        });
+        loan.set('contract_state', 'sent_to_loaner');
+        loan.set('loan_state', null);
+        loan.set('date_created', (new Date()).toISOString());
+        loan.save().then(function (loan) {
 
-        request(app)
-        .get('/loans/42')
-        .set('REMOTE_USER', 'remote user')
-        .end(function (err, res) {
-            // FIXME: They are all disabled because the user has no rights
-            assert(res.text.match(/<input type="checkbox" name="Loan\[contract_state\]" value="sent_to_loaner" disabled\s+checked>/));
-            assert(res.text.match(/<input type="checkbox" name="Loan\[contract_state\]" value="signature_received" disabled\s*>/));
-            assert(res.text.match(/<input type="checkbox" name="Loan\[loan_state\]" value="loaned" disabled\s*>/));
-            assert(res.text.match(/<input type="checkbox" name="Loan\[contract_state\]" value="signature_sent" disabled\s*>/));
-            stub.restore();
-            done();
+          request(app)
+          .get('/loans/' + loan.get('id'))
+          .set('REMOTE_USER', 'remote user')
+          .end(function (err, res) {
+              // FIXME: They are all disabled because the user has no rights
+              assert(res.text.match(/<input type="checkbox" name="Loan\[contract_state\]" value="sent_to_loaner" disabled\s+checked>/));
+              assert(res.text.match(/<input type="checkbox" name="Loan\[contract_state\]" value="signature_received" disabled\s*>/));
+              assert(res.text.match(/<input type="checkbox" name="Loan\[loan_state\]" value="loaned" disabled\s*>/));
+              assert(res.text.match(/<input type="checkbox" name="Loan\[contract_state\]" value="signature_sent" disabled\s*>/));
+              done();
+          });
         });
     });
 
     it('Correctly renders state for fresh loan on GET /loans/:id', function (done) {
-        var Loan = app.models.Loan;
-
         var fetchedId = null;
         var loan = LoanStub().attributes;
         loan.contract_state = null;
@@ -614,6 +525,27 @@ describe('LoanController', function() {
             assert(res.text.match(/<input type="checkbox" name="Loan\[contract_state\]" value="signature_sent" disabled\s*>/));
             stub.restore();
             done();
+        });
+    });
+
+    it('Correctly renders state for submitted loan on GET /loans/:id for paperwork user', function (done) {
+        var loan = Loan.forge(LoanStub().attributes);
+
+        loan.set('contract_state', 'sent_to_loaner');
+        loan.set('loan_state', 'loaned');
+        loan.set('date_created', (new Date()).toISOString());
+        loan.save().then(function (loan) {
+
+          request(app)
+          .get('/loans/' + loan.get('id'))
+          .set('REMOTE_USER', 'julian') // FIXME: remove hardcoded user
+          .end(function (err, res) {
+              assert(res.text.match(/<input type="checkbox" name="Loan\[contract_state\]" value="sent_to_loaner" disabled\s+checked>/));
+              assert(res.text.match(/<input type="checkbox" name="Loan\[contract_state\]" value="signature_received"\s*>/));
+              assert(res.text.match(/<input type="checkbox" name="Loan\[loan_state\]" value="loaned" disabled\s+checked>/));
+              assert(res.text.match(/<input type="checkbox" name="Loan\[contract_state\]" value="signature_sent"\s+disabled\s*>/));
+              done();
+          });
         });
     });
 });
