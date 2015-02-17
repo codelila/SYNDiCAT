@@ -9,7 +9,8 @@ var strings = {
   models: {
     Loan: {
       fields: {
-        granted_until: 'Kredit gewährt bis'
+        granted_until: 'Kredit gewährt bis',
+        date_created: 'Erstelldatum'
       }
     }
   },
@@ -18,7 +19,7 @@ var strings = {
   }
 };
 
-var Loan = require('../../app/model/loan_bookshelf.js')(strings, null, testBookshelf);
+var Loan = require('../../app/model/loan_bookshelf.js')(strings, require('../../config/validation'), testBookshelf);
 
 function loanStub() {
   var loan = new Loan({value: 10, loaner_name: 'Ich', loaner_address: 'Here',

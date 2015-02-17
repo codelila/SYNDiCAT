@@ -1,37 +1,22 @@
 'use strict';
 
 var Tv4Provider = require('../../core/Tv4Provider');
+var schema = require('../../core/schema');
+
 var tv4Provider = new Tv4Provider();
-var tv4 = null;
+var tableName = 'Loan';
 
-var bookshelf;
-var l;
-var changeValidator;
-var Loan;
-
-module.exports = function(locale, _validator, _bookshelf) {
-  // FIXME: Does not really support getting an instance with your locale or validator.
-  // Instead, last call overwrites these for all instances.
-  // This is still necessary for testability of loans_controller
+module.exports = function(locale, changeValidator, bookshelf) {
+  var l;
+  var Loan;
+  var tv4 = null;
 
   l = Object.create(locale);
   l.DATE = 'muss ein Datum im Format YYYY-MM-DD sein';
   l.DATE_TIME = 'muss ein Datum sein';
 
-  changeValidator = _validator;
-  bookshelf = _bookshelf;
-
   tv4 = tv4Provider.getInstance(l);
 
-  getLoan();
-  return Loan;
-};
-
-var tableName = 'Loan';
-
-var schema = require('../../core/schema');
-
-function getLoan() {
   bookshelf.knex.schema.hasTable(tableName).then(function(exists) {
     if (exists) {
       return;
@@ -169,4 +154,6 @@ function getLoan() {
   });
 
   Loan.Collection = bookshelf.Collection.extend({model: Loan});
-}
+
+  return Loan;
+};
