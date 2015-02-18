@@ -79,7 +79,7 @@ describe('SYNDiCAT', function() {
         .set('REMOTE_USER', 'remote user')
         .end(function (err, res) {
             res.statusCode.should.equal(200);
-            assert.ok(app.didRender(/loans\/index\.ejs$/i));
+            assert.ok(res.text.match(/<table class="table table-striped">/));
             done();
         });
     });
@@ -120,7 +120,6 @@ describe('SYNDiCAT', function() {
           .set('REMOTE_USER', 'remote user')
           .end(function (err, res) {
               res.statusCode.should.equal(200);
-              assert.ok(app.didRender(/loans\/show\.ejs$/i));
               assert.ok(res.text.match(loan.id));
               assert.ok(res.text.match(/Loaner Name/));
 
@@ -178,8 +177,10 @@ describe('SYNDiCAT', function() {
         .send({ "Loan": loan })
         .end(function (err, res) {
             res.statusCode.should.equal(200);
-
-            assert.ok(app.didFlash('error'));
+            // FIXME: Should be a german error message with a german field name
+            assert.ok(res.text.match(new RegExp('<div class="alert alert-error">\\s*' +
+              '<a class="close" data-dismiss="alert">×</a>\\s*' +
+              'Missing required property: value\\s*</div>')));
 
             done();
         });
@@ -195,7 +196,10 @@ describe('SYNDiCAT', function() {
         .end(function (err, res) {
             res.statusCode.should.equal(200);
 
-            assert.ok(app.didFlash('error'));
+            // FIXME: Should be a german error message with a german field name
+            assert.ok(res.text.match(new RegExp('<div class="alert alert-error">\\s*' +
+              '<a class="close" data-dismiss="alert">×</a>\\s*' +
+              'Missing required property: rate_of_interest\\s*</div>')));
 
             done();
         });
@@ -210,7 +214,7 @@ describe('SYNDiCAT', function() {
         .send({ "Loan": loan })
         .end(function (err, res) {
             res.statusCode.should.equal(200);
-            app.flashedMessages.error.should.include('Mindestlaufzeit und Kündigungsfrist müssen zusammen angegeben werden');
+            assert.ok(res.text.match(/Mindestlaufzeit und Kündigungsfrist müssen zusammen angegeben werden/));
             done();
         });
     });
@@ -224,7 +228,7 @@ describe('SYNDiCAT', function() {
         .send({ "Loan": loan })
         .end(function (err, res) {
             res.statusCode.should.equal(200);
-            app.flashedMessages.error.should.include('Mindestlaufzeit und Kündigungsfrist müssen zusammen angegeben werden');
+            assert.ok(res.text.match(/Mindestlaufzeit und Kündigungsfrist müssen zusammen angegeben werden/));
             done();
         });
     });
@@ -238,7 +242,7 @@ describe('SYNDiCAT', function() {
         .send({ "Loan": loan })
         .end(function (err, res) {
             res.statusCode.should.equal(200);
-            app.flashedMessages.error.should.include('Kündigungsfrist oder festes Ablaufdatum muss angegeben werden');
+            assert.ok(res.text.match(/Kündigungsfrist oder festes Ablaufdatum muss angegeben werden/));
             done();
         });
     });
@@ -252,7 +256,7 @@ describe('SYNDiCAT', function() {
         .send({ "Loan": loan })
         .end(function (err, res) {
             res.statusCode.should.equal(200);
-            app.flashedMessages.error.should.include('Kündigungsfrist darf nicht gleichzeitig mit einem festen Ablaufdatum angegeben werden');
+            assert.notEqual(res.text.indexOf('Kündigungsfrist darf nicht gleichzeitig mit einem festen Ablaufdatum angegeben werden'), -1);
             done();
         });
     });
@@ -266,7 +270,7 @@ describe('SYNDiCAT', function() {
         .send({ "Loan": loan })
         .end(function (err, res) {
             res.statusCode.should.equal(200);
-            app.flashedMessages.error.should.include('Mindestlaufzeit darf nicht gleichzeitig mit einem festen Ablaufdatum angegeben werden');
+            assert.notEqual(res.text.indexOf('Mindestlaufzeit darf nicht gleichzeitig mit einem festen Ablaufdatum angegeben werden'), -1);
             done();
         });
     });
@@ -280,7 +284,7 @@ describe('SYNDiCAT', function() {
         .send({ "Loan": loan })
         .end(function (err, res) {
             res.statusCode.should.equal(200);
-            app.flashedMessages.error.should.include('Kündigungsfrist darf nicht gleichzeitig mit einem festen Ablaufdatum angegeben werden');
+            assert.notEqual(res.text.indexOf('Kündigungsfrist darf nicht gleichzeitig mit einem festen Ablaufdatum angegeben werden'), -1);
             done();
         });
     });
@@ -307,21 +311,7 @@ describe('SYNDiCAT', function() {
         .send({ "Loan": loan })
         .end(function (err, res) {
             res.statusCode.should.equal(200);
-            app.flashedMessages.error.should.include('Kredit gewährt bis muss ein Datum im Format YYYY-MM-DD sein');
-            done();
-        });
-    });
-
-    it('checks format of granted until', function (done) {
-        var loan = extend({}, loanStubStringHash, {cancelation_period: '', minimum_term: '', granted_until: '2013-0101'});
-
-        request(app)
-        .post('/loans')
-        .set('REMOTE_USER', 'remote user')
-        .send({ "Loan": loan })
-        .end(function (err, res) {
-            res.statusCode.should.equal(200);
-            app.flashedMessages.error.should.include('Kredit gewährt bis muss ein Datum im Format YYYY-MM-DD sein');
+            assert.notEqual(res.text.indexOf('Kredit gewährt bis muss ein Datum im Format YYYY-MM-DD sein'), -1);
             done();
         });
     });

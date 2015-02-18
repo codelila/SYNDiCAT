@@ -39,7 +39,7 @@ describe('LoanModel', function () {
       assert.ok(m.get('value') === 10, 'Should not have saved successfully');
       done();
     }, function (err) {
-      err.message.should.equal('Not allowed to update value');
+      assert.equal(err.message, 'Not allowed to update value');
       done();
     });
   });
@@ -96,7 +96,7 @@ describe('LoanModel', function () {
     loan.save().then(function () {
       done('Should not have saved successfully');
     }, function (err) {
-      err.should.equal('Erstelldatum muss ein Datum sein');
+      assert.equal(err, 'Erstelldatum muss ein Datum sein');
       done();
     });
   });
