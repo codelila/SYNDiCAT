@@ -11,9 +11,9 @@ global.getApp = function() {
       var table = {
         'receive signed contracts': 'signaturehandler',
         'receive loans': 'loanhandler'
-      }
+      };
       return table[right] === user;
-    })),
+    }));
     app.enable('quiet');
     app.set('getLoan', function() {
       if (!Loan) {
