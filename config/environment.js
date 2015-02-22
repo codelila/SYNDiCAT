@@ -28,7 +28,9 @@ module.exports = function (compound) {
         });
         app.set('i18n', 'on');
         app.set('defaultLocale', 'de');
-        app.set('validator', require('./validation'));
+        if (!app.get('validator')) {
+          app.set('validator', require('./validation'));
+        }
         // Makes getLoan injectable. Sucks.
         if (!app.get('getLoan')) {
           var Loan = null;

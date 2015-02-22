@@ -2,9 +2,18 @@
 
 require('should');
 
-global.getApp = function(done) {
+var SyndicatValidator = require('../core/Validators/SyndicatValidator');
+
+global.getApp = function() {
     var Loan = null;
     var app = require('compound').createServer();
+    app.set('validator', SyndicatValidator(function (user, right) {
+      var table = {
+        'receive signed contracts': 'signaturehandler',
+        'receive loans': 'loanhandler'
+      }
+      return table[right] === user;
+    })),
     app.enable('quiet');
     app.set('getLoan', function() {
       if (!Loan) {

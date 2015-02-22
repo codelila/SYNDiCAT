@@ -479,7 +479,7 @@ describe('SYNDiCAT', function() {
           .get('/loans/' + loan.get('id'))
           .set('REMOTE_USER', 'remote user')
           .end(function (err, res) {
-              // FIXME: They are all disabled because the user has no rights
+              // They are all disabled because the user has no rights
               assert(res.text.match(/<input type="checkbox" name="Loan\[contract_state\]" value="sent_to_loaner" disabled\s+checked>/));
               assert(res.text.match(/<input type="checkbox" name="Loan\[contract_state\]" value="signature_received" disabled\s*>/));
               assert(res.text.match(/<input type="checkbox" name="Loan\[loan_state\]" value="loaned" disabled\s*>/));
@@ -506,12 +506,11 @@ describe('SYNDiCAT', function() {
 
         request(app)
         .get('/loans/42')
-        .set('REMOTE_USER', 'remote user')
+        .set('REMOTE_USER', 'loanhandler')
         .end(function (err, res) {
-            // FIXME: They are all disabled because the user has no rights
             assert(res.text.match(/<input type="checkbox" name="Loan\[contract_state\]" value="sent_to_loaner"\s*>/));
             assert(res.text.match(/<input type="checkbox" name="Loan\[contract_state\]" value="signature_received" disabled\s*>/));
-            assert(res.text.match(/<input type="checkbox" name="Loan\[loan_state\]" value="loaned" disabled\s*>/));
+            assert(res.text.match(/<input type="checkbox" name="Loan\[loan_state\]" value="loaned"\s*>/));
             assert(res.text.match(/<input type="checkbox" name="Loan\[contract_state\]" value="signature_sent" disabled\s*>/));
             stub.restore();
             done();
@@ -528,7 +527,7 @@ describe('SYNDiCAT', function() {
 
           request(app)
           .get('/loans/' + loan.get('id'))
-          .set('REMOTE_USER', 'julian') // FIXME: remove hardcoded user
+          .set('REMOTE_USER', 'signaturehandler')
           .end(function (err, res) {
               assert(res.text.match(/<input type="checkbox" name="Loan\[contract_state\]" value="sent_to_loaner" disabled\s+checked>/));
               assert(res.text.match(/<input type="checkbox" name="Loan\[contract_state\]" value="signature_received"\s*>/));
