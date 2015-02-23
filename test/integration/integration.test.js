@@ -58,7 +58,7 @@ describe('SYNDiCAT', function() {
         .get('/loans/new')
         .set('REMOTE_USER', 'remote user')
         .end(function (err, res) {
-            res.statusCode.should.equal(200);
+            assert.equal(res.statusCode, 200);
             // Make sure there is a form
             assert.ok(res.text.match(/<form action="\/loans" method="POST" id="loan-form"/));
             // Make sure it's empty
@@ -76,34 +76,11 @@ describe('SYNDiCAT', function() {
         .get('/loans')
         .set('REMOTE_USER', 'remote user')
         .end(function (err, res) {
-            res.statusCode.should.equal(200);
+            assert.equal(res.statusCode, 200);
             assert.ok(res.text.match(/<table class="table table-striped">/));
             done();
         });
     });
-
-    /*
-     * GET /loans/:id/edit
-     * Should access Loan#find and render loans/edit.ejs
-     */
-/*
-    it('should access Loan#find and render "edit" template on GET /loans/:id/edit', function (done) {
-        // Mock Loan#find
-        Loan.find = sinon.spy(function (id, callback) {
-            callback(null, new Loan);
-        });
-
-        request(app)
-        .get('/loans/42/edit')
-        .end(function (err, res) {
-            res.statusCode.should.equal(200);
-            Loan.find.calledWith('42').should.be.true;
-            app.didRender(/loans\/edit\.ejs$/i).should.be.true;
-
-            done();
-        });
-    });
-*/
 
     /*
      * GET /loans/:id
@@ -117,7 +94,7 @@ describe('SYNDiCAT', function() {
           .get('/loans/' + loan.id)
           .set('REMOTE_USER', 'remote user')
           .end(function (err, res) {
-              res.statusCode.should.equal(200);
+              assert.equal(res.statusCode, 200);
               assert.ok(res.text.match(loan.id));
               assert.ok(res.text.match(/Loaner Name/));
 
@@ -134,7 +111,7 @@ describe('SYNDiCAT', function() {
           .get('/loans/' + loan.id + '.json')
           .set('REMOTE_USER', 'remote user')
           .end(function (err, res) {
-              res.statusCode.should.equal(200);
+              assert.equal(res.statusCode, 200);
               assert.ok(res.text.match(loan.id));
               assert.ok(res.text.match(/Loaner Name/));
 
@@ -155,7 +132,7 @@ describe('SYNDiCAT', function() {
         .set('REMOTE_USER', 'remote user')
         .send({ "Loan": loan })
         .end(function (err, res) {
-            res.statusCode.should.equal(302);
+            assert.equal(res.statusCode, 302);
             // FIXME: test
 
             done();
@@ -174,7 +151,7 @@ describe('SYNDiCAT', function() {
         .set('REMOTE_USER', 'remote user')
         .send({ "Loan": loan })
         .end(function (err, res) {
-            res.statusCode.should.equal(200);
+            assert.equal(res.statusCode, 200);
             // FIXME: Should be a german error message with a german field name
             assert.ok(res.text.match(new RegExp('<div class="alert alert-error">\\s*' +
               '<a class="close" data-dismiss="alert">×</a>\\s*' +
@@ -192,7 +169,7 @@ describe('SYNDiCAT', function() {
         .set('REMOTE_USER', 'remote user')
         .send({ "Loan": loan })
         .end(function (err, res) {
-            res.statusCode.should.equal(200);
+            assert.equal(res.statusCode, 200);
 
             // FIXME: Should be a german error message with a german field name
             assert.ok(res.text.match(new RegExp('<div class="alert alert-error">\\s*' +
@@ -211,7 +188,7 @@ describe('SYNDiCAT', function() {
         .set('REMOTE_USER', 'remote user')
         .send({ "Loan": loan })
         .end(function (err, res) {
-            res.statusCode.should.equal(200);
+            assert.equal(res.statusCode, 200);
             assert.ok(res.text.match(/Mindestlaufzeit und Kündigungsfrist müssen zusammen angegeben werden/));
             done();
         });
@@ -225,7 +202,7 @@ describe('SYNDiCAT', function() {
         .set('REMOTE_USER', 'remote user')
         .send({ "Loan": loan })
         .end(function (err, res) {
-            res.statusCode.should.equal(200);
+            assert.equal(res.statusCode, 200);
             assert.ok(res.text.match(/Mindestlaufzeit und Kündigungsfrist müssen zusammen angegeben werden/));
             done();
         });
@@ -239,7 +216,7 @@ describe('SYNDiCAT', function() {
         .set('REMOTE_USER', 'remote user')
         .send({ "Loan": loan })
         .end(function (err, res) {
-            res.statusCode.should.equal(200);
+            assert.equal(res.statusCode, 200);
             assert.ok(res.text.match(/Kündigungsfrist oder festes Ablaufdatum muss angegeben werden/));
             done();
         });
@@ -253,7 +230,7 @@ describe('SYNDiCAT', function() {
         .set('REMOTE_USER', 'remote user')
         .send({ "Loan": loan })
         .end(function (err, res) {
-            res.statusCode.should.equal(200);
+            assert.equal(res.statusCode, 200);
             assert.notEqual(res.text.indexOf('Kündigungsfrist darf nicht gleichzeitig mit einem festen Ablaufdatum angegeben werden'), -1);
             done();
         });
@@ -267,7 +244,7 @@ describe('SYNDiCAT', function() {
         .set('REMOTE_USER', 'remote user')
         .send({ "Loan": loan })
         .end(function (err, res) {
-            res.statusCode.should.equal(200);
+            assert.equal(res.statusCode, 200);
             assert.notEqual(res.text.indexOf('Mindestlaufzeit darf nicht gleichzeitig mit einem festen Ablaufdatum angegeben werden'), -1);
             done();
         });
@@ -281,7 +258,7 @@ describe('SYNDiCAT', function() {
         .set('REMOTE_USER', 'remote user')
         .send({ "Loan": loan })
         .end(function (err, res) {
-            res.statusCode.should.equal(200);
+            assert.equal(res.statusCode, 200);
             assert.notEqual(res.text.indexOf('Kündigungsfrist darf nicht gleichzeitig mit einem festen Ablaufdatum angegeben werden'), -1);
             done();
         });
@@ -295,7 +272,7 @@ describe('SYNDiCAT', function() {
         .set('REMOTE_USER', 'remote user')
         .send({ "Loan": loan })
         .end(function (err, res) {
-            res.statusCode.should.equal(302);
+            assert.equal(res.statusCode, 302);
             done();
         });
     });
@@ -308,74 +285,12 @@ describe('SYNDiCAT', function() {
         .set('REMOTE_USER', 'remote user')
         .send({ "Loan": loan })
         .end(function (err, res) {
-            res.statusCode.should.equal(200);
+            assert.equal(res.statusCode, 200);
             assert.notEqual(res.text.indexOf('Kredit gewährt bis muss ein Datum im Format YYYY-MM-DD sein'), -1);
             done();
         });
     });
 
-    /*
-     * PUT /loans/:id
-     * Should redirect back to /loans when Loan is valid
-     */
-/*
-    it('should redirect on PUT /loans/:id with a valid Loan', function (done) {
-        var loan = LoanStub();
-
-        var fetchedId = null;
-        Loan.prototype.fetch = sinon.spy(function () {
-            var loan = this;
-            fetchedId = loan.id;
-            return {
-              then: function (callback) {
-                callback(loan);
-              }
-            }
-        });
-
-        request(app)
-        .put('/loans/1')
-        .send({ "Loan": loan })
-        .end(function (err, res) {
-            res.statusCode.should.equal(302);
-            res.header['location'].should.include('/loans/1');
-
-            app.didFlash('error').should.be.false;
-
-            done();
-        });
-    });
-*/
-    /*
-     * PUT /loans/:id
-     * Should not redirect when Loan is invalid
-     */
-/*
-    it('should fail / not redirect on PUT /loans/:id with an invalid Loan', function (done) {
-        var loan = LoanStub();
-
-        var fetchedId = null;
-        Loan.prototype.fetch = sinon.spy(function () {
-            var loan = this;
-            fetchedId = loan.id;
-            return {
-              then: function (callback) {
-                callback(loan);
-              }
-            }
-        });
-
-        request(app)
-        .put('/loans/1')
-        .send({ "Loan": loan })
-        .end(function (err, res) {
-            res.statusCode.should.equal(200);
-            app.didFlash('error').should.be.true;
-
-            done();
-        });
-    });
-*/
     /*
      * DELETE /loans/:id
      * -- TODO: IMPLEMENT --

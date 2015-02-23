@@ -1,7 +1,5 @@
 'use strict';
 
-require('should');
-
 var SyndicatValidator = require('../core/Validators/SyndicatValidator');
 
 global.getApp = function() {

@@ -24,7 +24,6 @@
   , "sinon": "*"
   , "supertest": ">= 0"
   , "mocha": ">= 0"
-  , "should": "~3.0.0"
   , "co-generators": "*"
   }
 , "scripts":
