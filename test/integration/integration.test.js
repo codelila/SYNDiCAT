@@ -1,11 +1,9 @@
 'use strict';
 
-var testBookshelf = require('../testBookshelf');
-var app, compound
+var app
 , assert = require('assert')
 , request = require('supertest')
-, sinon   = require('sinon')
-, when = require('when');
+, sinon = require('sinon');
 
 var Loan;
 
@@ -391,71 +389,10 @@ describe('SYNDiCAT', function() {
     it('should not delete a Loan on DELETE /loans/:id if it fails');
 
     // FIXME: remote user is not allowed to update loan state
-    it('should update state on PUT /loans/:id/state', false && function (done) {
-        var fetchedId = null;
-        var updatedAttrs = null;
-        var stub = sinon.stub(Loan.prototype, 'sync', function () {
-            var loan = this;
-            fetchedId = loan.id;
-            return {
-              first: function () {
-                var res = LoanStub().attributes;
-                res.date_created = (new Date()).toISOString();
-                return when.resolve([ res ]);
-              },
-              update: function (attrs) {
-                updatedAttrs = attrs;
-              }
-            };
-        });
-
-        request(app)
-        .put('/loans/42/state')
-        .set('REMOTE_USER', 'remote user')
-        .send('Loan[contract_state]=sent_to_loaner')
-        .end(function (err, res) {
-            res.statusCode.should.equal(302);
-            fetchedId.should.equal('42');
-            res.header.location.should.equal('/loans/42');
-            updatedAttrs.contract_state.should.equal('sent_to_loaner');
-            updatedAttrs.date_contract_sent_to_loaner.should.match(/^\d{4}-\d{2}-\d{2}/);
-            updatedAttrs.user_contract_sent_to_loaner.should.equal('remote user');
-            assert.equal(app.didFlash('error'), false);
-
-            stub.restore();
-            done();
-        });
-    });
+    it('should update state on PUT /loans/:id/state', false);
 
     // FIXME
-    it('should respond with error code on invalid PUT /loans/:id/state', false && function (done) {
-        var fetchedId = null;
-        var stub = sinon.stub(Loan.prototype, 'sync', function () {
-            var loan = this;
-            fetchedId = loan.id;
-            return {
-              first: function () {
-                var res = LoanStub().attributes;
-                res.date_created = (new Date()).toISOString();
-                return when.resolve([ res ]);
-              }
-            };
-        });
-
-        request(app)
-        .put('/loans/42/state')
-        .set('REMOTE_USER', 'remote user')
-        .send('Loan[contract_]=abc')
-        .end(function (err, res) {
-            res.statusCode.should.not.equal(302);
-            res.statusCode.should.not.equal(200);
-            fetchedId.should.equal('42');
-            assert.ok(app.didFlash('error'));
-
-            stub.restore();
-            done();
-        });
-    });
+    it('should respond with error code on invalid PUT /loans/:id/state', false);
 
     it('renders PDF on GET /loans/:id/contract', function (done) {
         request(app)
@@ -490,30 +427,22 @@ describe('SYNDiCAT', function() {
     });
 
     it('Correctly renders state for fresh loan on GET /loans/:id', function (done) {
-        var fetchedId = null;
-        var loan = LoanStub().attributes;
-        loan.contract_state = null;
-        loan.loan_state = null;
-        var stub = sinon.stub(Loan.prototype, 'sync', function () {
-            fetchedId = this.id;
-            return {
-              first: function () {
-                loan.date_created = (new Date()).toISOString();
-                return when.resolve([ loan ]);
-              }
-            };
-        });
+        var loan = LoanStub();
+        loan.set('contract_state', null);
+        loan.set('loan_state', null);
 
-        request(app)
-        .get('/loans/42')
-        .set('REMOTE_USER', 'loanhandler')
-        .end(function (err, res) {
-            assert(res.text.match(/<input type="checkbox" name="Loan\[contract_state\]" value="sent_to_loaner"\s*>/));
-            assert(res.text.match(/<input type="checkbox" name="Loan\[contract_state\]" value="signature_received" disabled\s*>/));
-            assert(res.text.match(/<input type="checkbox" name="Loan\[loan_state\]" value="loaned"\s*>/));
-            assert(res.text.match(/<input type="checkbox" name="Loan\[contract_state\]" value="signature_sent" disabled\s*>/));
-            stub.restore();
-            done();
+        loan.save().then(function (loan) {
+
+          request(app)
+          .get('/loans/' + loan.get('id'))
+          .set('REMOTE_USER', 'loanhandler')
+          .end(function (err, res) {
+              assert(res.text.match(/<input type="checkbox" name="Loan\[contract_state\]" value="sent_to_loaner"\s*>/));
+              assert(res.text.match(/<input type="checkbox" name="Loan\[contract_state\]" value="signature_received" disabled\s*>/));
+              assert(res.text.match(/<input type="checkbox" name="Loan\[loan_state\]" value="loaned"\s*>/));
+              assert(res.text.match(/<input type="checkbox" name="Loan\[contract_state\]" value="signature_sent" disabled\s*>/));
+              done();
+          });
         });
     });
 
